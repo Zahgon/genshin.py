@@ -25,37 +25,7 @@ class StarRailBattleChronicleClient(base.BaseBattleChronicleClient):
         cache: bool = False,
     ) -> typing.Mapping[str, typing.Any]:
         """Get an arbitrary starrail object."""
-        payload = dict(payload or {})
-        original_payload = payload.copy()
-
-        uid = uid or await self._get_uid(types.Game.STARRAIL)
-        payload = dict(role_id=uid, server=utility.recognize_starrail_server(uid), **payload)
-
-        data, params = None, None
-        if method == "POST":
-            data = payload
-        else:
-            params = payload
-
-        cache_key: typing.Optional[base.ChronicleCacheKey] = None
-        if cache:
-            cache_key = base.ChronicleCacheKey(
-                types.Game.STARRAIL,
-                endpoint,
-                uid,
-                lang=lang or self.lang,
-                params=tuple(original_payload.values()),
-            )
-
-        return await self.request_game_record(
-            endpoint,
-            lang=lang,
-            game=types.Game.STARRAIL,
-            region=utility.recognize_region(uid, game=types.Game.STARRAIL),
-            params=params,
-            data=data,
-            cache=cache_key,
-        )
+        pass
 
     @typing.overload
     async def get_starrail_notes(
@@ -84,21 +54,7 @@ class StarRailBattleChronicleClient(base.BaseBattleChronicleClient):
         return_raw_data: bool = False,
     ) -> typing.Union[models.StarRailNote, typing.Mapping[str, typing.Any]]:
         """Get starrail real-time notes."""
-        try:
-            data = await self._request_starrail_record("note", uid, lang=lang)
-        except errors.DataNotPublic as e:
-            # error raised only when real-time notes are not enabled
-            if uid and (await self._get_uid(types.Game.STARRAIL)) != uid:
-                raise errors.GenshinException(e.response, "Cannot view real-time notes of other users.") from e
-            if not autoauth:
-                raise errors.GenshinException(e.response, "Real-time notes are not enabled.") from e
-
-            await self.update_settings(3, True, game=types.Game.STARRAIL)
-            data = await self._request_starrail_record("note", uid, lang=lang)
-
-        if return_raw_data:
-            return data
-        return models.StarRailNote(**data)
+        pass
 
     async def get_starrail_user(
         self,
@@ -107,12 +63,7 @@ class StarRailBattleChronicleClient(base.BaseBattleChronicleClient):
         lang: typing.Optional[str] = None,
     ) -> models.StarRailUserStats:
         """Get starrail user."""
-        index_data, basic_info = await asyncio.gather(
-            self._request_starrail_record("index", uid, lang=lang),
-            self._request_starrail_record("role/basicInfo", uid, lang=lang),
-        )
-        basic_data = models.StarRailUserInfo(**basic_info)
-        return models.StarRailUserStats(**index_data, info=basic_data)
+        pass
 
     @typing.overload
     async def get_starrail_characters(
@@ -140,12 +91,7 @@ class StarRailBattleChronicleClient(base.BaseBattleChronicleClient):
         simple: bool = False,
     ) -> typing.Union[models.StarRailSimpleCharacterResponse, models.StarRailDetailCharacterResponse]:
         """Get starrail characters."""
-        payload = {"need_wiki": "true"}
-        data = await self._request_starrail_record("avatar/info", uid, lang=lang, payload=payload)
-
-        if simple:
-            return models.StarRailSimpleCharacterResponse(**data)
-        return models.StarRailDetailCharacterResponse(**data)
+        pass
 
     @typing.overload
     async def get_starrail_challenge(
@@ -174,11 +120,7 @@ class StarRailBattleChronicleClient(base.BaseBattleChronicleClient):
         raw: bool = False,
     ) -> typing.Union[models.StarRailChallenge, typing.Mapping[str, typing.Any]]:
         """Get starrail challenge runs."""
-        payload = dict(schedule_type=2 if previous else 1, need_all="true")
-        data = await self._request_starrail_record("challenge", uid, lang=lang, payload=payload)
-        if raw:
-            return data
-        return models.StarRailChallenge(**data)
+        pass
 
     async def get_starrail_rogue(
         self,
@@ -188,9 +130,7 @@ class StarRailBattleChronicleClient(base.BaseBattleChronicleClient):
         lang: typing.Optional[str] = None,
     ) -> models.StarRailRogue:
         """Get starrail rogue runs."""
-        payload = dict(schedule_type=schedule_type, need_detail="true")
-        data = await self._request_starrail_record("rogue", uid, lang=lang, payload=payload)
-        return models.StarRailRogue(**data)
+        pass
 
     @typing.overload
     async def get_starrail_pure_fiction(
@@ -219,11 +159,7 @@ class StarRailBattleChronicleClient(base.BaseBattleChronicleClient):
         raw: bool = False,
     ) -> typing.Union[models.StarRailPureFiction, typing.Mapping[str, typing.Any]]:
         """Get starrail pure fiction runs."""
-        payload = dict(schedule_type=2 if previous else 1, need_all="true")
-        data = await self._request_starrail_record("challenge_story", uid, lang=lang, payload=payload)
-        if raw:
-            return data
-        return models.StarRailPureFiction(**data)
+        pass
 
     @typing.overload
     async def get_starrail_apc_shadow(
@@ -252,11 +188,7 @@ class StarRailBattleChronicleClient(base.BaseBattleChronicleClient):
         raw: bool = False,
     ) -> typing.Union[models.StarRailAPCShadow, typing.Mapping[str, typing.Any]]:
         """Get starrail apocalyptic shadow runs."""
-        payload = dict(schedule_type=2 if previous else 1, need_all="true")
-        data = await self._request_starrail_record("challenge_boss", uid, lang=lang, payload=payload)
-        if raw:
-            return data
-        return models.StarRailAPCShadow(**data)
+        pass
 
     async def get_starrail_event_calendar(
         self,
@@ -265,8 +197,7 @@ class StarRailBattleChronicleClient(base.BaseBattleChronicleClient):
         lang: typing.Optional[str] = None,
     ) -> models.HSREventCalendar:
         """Get HSR event calendar."""
-        data = await self._request_starrail_record("get_act_calender", uid, lang=lang, cache=True)
-        return models.HSREventCalendar(**data)
+        pass
 
     get_apocalyptic_shadow = get_starrail_apc_shadow
     """Alias for :meth:`get_starrail_apc_shadow`."""
@@ -298,10 +229,4 @@ class StarRailBattleChronicleClient(base.BaseBattleChronicleClient):
         raw: bool = False,
     ) -> typing.Union[models.AnomalyArbitration, typing.Mapping[str, typing.Any]]:
         """Get starrail anomaly arbitration runs."""
-        # 2026-04-24: API changed to use schedule_type=3 and returns three most recent runs,
-        # previous parameter is kept for backward compatibility but has no effect.
-        payload = dict(schedule_type=3)
-        data = await self._request_starrail_record("challenge_peak", uid, lang=lang, payload=payload)
-        if raw:
-            return data
-        return models.AnomalyArbitration(**data)
+        pass

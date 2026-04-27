@@ -74,7 +74,7 @@ class Act(APIModel):
 
     @pydantic.field_validator("finish_datetime", mode="before")
     def __parse_datetime(cls, value: typing.Mapping[str, typing.Any]) -> datetime.datetime:
-        return datetime.datetime(**value)
+        pass
 
 
 class TheaterStats(APIModel):
@@ -108,7 +108,7 @@ class TheaterSchedule(APIModel):
 
     @pydantic.field_validator("start_datetime", "end_datetime", mode="before")
     def __parse_datetime(cls, value: typing.Mapping[str, typing.Any]) -> datetime.datetime:
-        return datetime.datetime(**value)
+        pass
 
 
 class BattleStatCharacter(APIModel):
@@ -121,9 +121,7 @@ class BattleStatCharacter(APIModel):
 
     @pydantic.field_validator("value", mode="before")
     def __intify_value(cls, value: str) -> int:
-        if not value:
-            return 0
-        return int(value)
+        pass
 
 
 class TheaterBattleStats(APIModel):
@@ -139,9 +137,7 @@ class TheaterBattleStats(APIModel):
         "max_defeat_character", "max_damage_character", "max_take_damage_character", mode="before"
     )
     def __none_if_empty(cls, value: dict[str, typing.Any]) -> typing.Any:
-        if not value or value.get("avatar_id", 0) == 0:
-            return None
-        return value
+        pass
 
 
 class ImgTheaterData(APIModel):
@@ -157,11 +153,7 @@ class ImgTheaterData(APIModel):
 
     @pydantic.model_validator(mode="before")
     def __unnest_detail(cls, values: dict[str, typing.Any]) -> dict[str, typing.Any]:
-        detail: typing.Optional[dict[str, typing.Any]] = values.get("detail")
-        values["rounds_data"] = detail.get("rounds_data", []) if detail is not None else []
-        values["backup_avatars"] = detail.get("backup_avatars", []) if detail is not None else []
-        values["fight_statisic"] = detail.get("fight_statisic", None) if detail is not None else None
-        return values
+        pass
 
 
 class ImgTheater(APIModel):

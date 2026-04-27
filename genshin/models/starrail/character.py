@@ -284,7 +284,7 @@ class StarRailSimpleCharacter(StarRailPartialCharacter):
     @property
     def is_wearing_outfit(self) -> bool:
         """Whether the character is wearing an outfit."""
-        return "avatar_skin_image" in self.image
+        pass
 
 
 class StarRailDetailCharacter(StarRailSimpleCharacter):
@@ -303,11 +303,7 @@ class StarRailDetailCharacter(StarRailSimpleCharacter):
         cls, value: typing.Optional[typing.Dict[str, typing.Any]]
     ) -> typing.Optional[typing.Dict[str, typing.Any]]:
         """Return None if memosprite ID is 0."""
-        if value is None:
-            return None
-        if value.get("servant_id", "0") == "0":
-            return None
-        return value
+        pass
 
 
 class StarRailLineupCharacter(StarRailPartialCharacter):

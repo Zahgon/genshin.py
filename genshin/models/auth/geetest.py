@@ -34,16 +34,7 @@ class BaseMMT(pydantic.BaseModel):
     @pydantic.model_validator(mode="before")
     def __parse_data(cls, data: dict[str, typing.Any]) -> dict[str, typing.Any]:
         """Parse the data if it was provided in a raw format."""
-        if "data" in data:
-            # Assume the data is aigis header and parse it
-            session_id = data["session_id"]
-            data = data["data"]
-            if isinstance(data, str):
-                data = json.loads(data)
-
-            data["session_id"] = session_id
-
-        return data
+        pass
 
 
 class MMT(BaseMMT):
@@ -60,7 +51,7 @@ class SessionMMT(MMT):
 
     def get_mmt(self) -> MMT:
         """Get the base MMT data."""
-        return MMT(**self.model_dump(exclude={"session_id"}))
+        pass
 
 
 class MMTv4(BaseMMT):
@@ -77,7 +68,7 @@ class SessionMMTv4(MMTv4):
 
     def get_mmt(self) -> MMTv4:
         """Get the base MMTv4 data."""
-        return MMTv4(**self.model_dump(exclude={"session_id"}))
+        pass
 
 
 class RiskyCheckMMT(MMT):
@@ -94,7 +85,7 @@ class BaseMMTResult(pydantic.BaseModel):
 
         This method acts as `dict` but excludes the `session_id` field.
         """
-        return self.model_dump(exclude={"session_id"})
+        pass
 
 
 class BaseSessionMMTResult(BaseMMTResult):
@@ -104,7 +95,7 @@ class BaseSessionMMTResult(BaseMMTResult):
 
     def to_aigis_header(self) -> str:
         """Convert the result to `x-rpc-aigis` header."""
-        return auth_utility.get_aigis_header(self.session_id, self.get_data())
+        pass
 
 
 class MMTResult(BaseMMTResult):
@@ -140,7 +131,7 @@ class RiskyCheckMMTResult(MMTResult):
 
     def to_rpc_risky(self) -> str:
         """Convert the MMT result to a RPC risky header."""
-        return auth_utility.generate_risky_header(self.check_id, self.geetest_challenge, self.geetest_validate)
+        pass
 
 
 class RiskyCheckAction(str, enum.Enum):
@@ -161,7 +152,4 @@ class RiskyCheckResult(pydantic.BaseModel):
 
     def to_mmt(self) -> RiskyCheckMMT:
         """Convert the check result to a `RiskyCheckMMT` object."""
-        if self.mmt is None:
-            raise ValueError("The check result does not contain a MMT object.")
-
-        return RiskyCheckMMT(**self.mmt.model_dump(), check_id=self.id)
+        pass

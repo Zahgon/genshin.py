@@ -147,29 +147,22 @@ GEETEST_LANGS: typing.Final[typing.Dict[types.Lang, str]] = {
 
 def lang_to_geetest_lang(lang: types.Lang) -> str:
     """Convert `client.lang` to geetest lang."""
-    return GEETEST_LANGS.get(lang, "en")
+    pass
 
 
 def encrypt_credentials(text: str, key_type: typing.Literal[1, 2]) -> str:
     """Encrypt text for geetest."""
-    import rsa
-
-    public_key = rsa.PublicKey.load_pkcs1_openssl_pem(LOGIN_KEY_TYPE_1 if key_type == 1 else LOGIN_KEY_TYPE_2)
-    crypto = rsa.encrypt(text.encode("utf-8"), public_key)
-    return base64.b64encode(crypto).decode("utf-8")
+    pass
 
 
 def get_aigis_header(session_id: str, mmt_data: dict[str, typing.Any]) -> str:
     """Get aigis header."""
-    return f"{session_id};{base64.b64encode(json.dumps(mmt_data).encode()).decode()}"
+    pass
 
 
 def generate_sign(data: dict[str, typing.Any], key: str) -> str:
     """Generate a sign for the given `data` and `app_key`."""
-    string = ""
-    for k in sorted(data.keys()):
-        string += k + "=" + str(data[k]) + "&"
-    return hmac.new(key.encode(), string[:-1].encode(), sha256).hexdigest()
+    pass
 
 
 def generate_risky_header(
@@ -178,4 +171,4 @@ def generate_risky_header(
     validate: str = "",
 ) -> str:
     """Generate risky header for geetest verification."""
-    return f"id={check_id};c={challenge};s={validate}|jordan;v={validate}"
+    pass

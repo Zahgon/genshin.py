@@ -69,17 +69,7 @@ class TCGCost(APIModel):
 
     @pydantic.field_validator("element")
     def __fix_element(cls, value: str) -> str:
-        return {
-            "CostTypeCryo": "Cryo",
-            "CostTypeDendro": "Dendro",
-            "CostTypeElectro": "Electro",
-            "CostTypeGeo": "Geo",
-            "CostTypeHydro": "Hydro",
-            "CostTypePyro": "Pyro",
-            "CostTypeAnemo": "Anemo",
-            "CostTypeSame": "Same",
-            "CostTypeVoid": "Void",
-        }.get(value, value)
+        pass
 
 
 class TCGBaseCard(TCGPartialCard):

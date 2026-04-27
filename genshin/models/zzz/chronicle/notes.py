@@ -78,17 +78,17 @@ class BatteryCharge(APIModel):
     @property
     def is_full(self) -> bool:
         """Check if the energy is full."""
-        return self.current == self.max
+        pass
 
     @property
     def full_datetime(self) -> datetime.datetime:
         """Get the datetime when the energy will be full."""
-        return datetime.datetime.now().astimezone() + datetime.timedelta(seconds=self.seconds_till_full)
+        pass
 
     @pydantic.model_validator(mode="before")
     @classmethod
     def __unnest_progress(cls, values: dict[str, typing.Any]) -> dict[str, typing.Any]:
-        return {**values, **values.pop("progress", {})}
+        pass
 
 
 class ZZZEngagement(APIModel):
@@ -121,27 +121,27 @@ class ZZZTempleRunning(APIModel):
     @property
     def reset_datetime(self) -> datetime.datetime:
         """The datetime when the currency will be reset."""
-        return datetime.datetime.now().astimezone() + self.currency_next_refresh_ts
+        pass
 
     @pydantic.field_validator("currency_next_refresh_ts", mode="before")
     @classmethod
     def __parse_currency_refresh(cls, v: str) -> datetime.timedelta:
-        return datetime.timedelta(seconds=int(v))
+        pass
 
     @pydantic.field_validator("bench_state", mode="before")
     @classmethod
     def __parse_bench_state(cls, v: str) -> typing.Union[BenchState, str]:
-        return prevent_enum_error(v, BenchState)
+        pass
 
     @pydantic.field_validator("expedition_state", mode="before")
     @classmethod
     def __parse_expedition_state(cls, v: str) -> typing.Union[ExpeditionState, str]:
-        return prevent_enum_error(v, ExpeditionState)
+        pass
 
     @pydantic.field_validator("shelve_state", mode="before")
     @classmethod
     def __parse_shelve_store_state(cls, v: str) -> typing.Union[ShelveStoreState, str]:
-        return prevent_enum_error(v, ShelveStoreState)
+        pass
 
 
 class ZZZMemberCard(APIModel):
@@ -154,12 +154,12 @@ class ZZZMemberCard(APIModel):
     @property
     def reset_datetime(self) -> datetime.datetime:
         """The datetime when the member card will be reset."""
-        return datetime.datetime.now().astimezone() + self.exp_time
+        pass
 
     @pydantic.field_validator("exp_time", mode="before")
     @classmethod
     def __parse_currency_refresh(cls, v: str) -> datetime.timedelta:
-        return datetime.timedelta(seconds=int(v))
+        pass
 
 
 class BountyCommission(APIModel):
@@ -173,12 +173,12 @@ class BountyCommission(APIModel):
     @property
     def completed(self) -> bool:
         """Whether the bounty commissions are completed."""
-        return self.cur_completed == self.total
+        pass
 
     @property
     def reset_datetime(self) -> datetime.datetime:
         """The datetime when the bounty commission will be reset."""
-        return datetime.datetime.now().astimezone() + self.refresh_time
+        pass
 
 
 class SurveyPoints(APIModel):
@@ -206,12 +206,12 @@ class WeeklyTask(APIModel):
     @property
     def completed(self) -> bool:
         """Whether the weekly tasks is full completed."""
-        return self.cur_point >= self.max_point
+        pass
 
     @property
     def reset_datetime(self) -> datetime.datetime:
         """The datetime when the weekly tasks will be reset."""
-        return datetime.datetime.now().astimezone() + self.refresh_time
+        pass
 
 
 class ZZZNotes(APIModel):
@@ -230,16 +230,9 @@ class ZZZNotes(APIModel):
     @pydantic.field_validator("scratch_card_completed", mode="before")
     @classmethod
     def __transform_value(cls, v: typing.Literal["CardSignDone", "CardSignNotDone"]) -> bool:
-        return v == "CardSignDone"
+        pass
 
     @pydantic.model_validator(mode="before")
     @classmethod
     def __unnest_value(cls, values: dict[str, typing.Any]) -> dict[str, typing.Any]:
-        if "video_store_state" not in values:
-            values["video_store_state"] = values["vhs_sale"]["sale_state"]
-        if "hollow_zero" not in values:
-            values["hollow_zero"] = {
-                "bounty_commission": values["bounty_commission"],
-                "survey_points": values["survey_points"],
-            }
-        return values
+        pass

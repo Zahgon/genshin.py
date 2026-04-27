@@ -68,11 +68,8 @@ class TeapotReplica(APIModel):
 
     @pydantic.field_validator("images", mode="before")
     def __extract_urls(cls, images: typing.Sequence[typing.Any]) -> typing.Sequence[str]:
-        return [image if isinstance(image, str) else image["url"] for image in images]
+        pass
 
     @pydantic.field_validator("video", mode="before")
     def __extract_url(cls, video: typing.Any) -> typing.Optional[str]:
-        if isinstance(video, str):
-            return video
-
-        return video["url"] if video else None
+        pass

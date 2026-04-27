@@ -56,7 +56,7 @@ class CharacterRanks(APIModel):
     def __filter_invalid_chars(
         cls, v: typing.List[typing.Dict[str, typing.Any]]
     ) -> typing.List[typing.Dict[str, typing.Any]]:
-        return [char for char in v if char["avatar_id"] != 0]
+        pass
 
 
 class Battle(APIModel):
@@ -119,8 +119,7 @@ class SpiralAbyss(APIModel):
     @pydantic.model_validator(mode="before")
     def __nest_ranks(cls, values: dict[str, typing.Any]) -> dict[str, AbyssCharacter]:
         """By default ranks are for some reason on the same level as the rest of the abyss."""
-        values.setdefault("ranks", {}).update(values)
-        return values
+        pass
 
 
 class SpiralAbyssPair(APIModel):

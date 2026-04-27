@@ -18,22 +18,7 @@ def prevent_concurrency(func: CallableT) -> CallableT:
 
     This should be done exclusively for functions that cache their result.
     """
-
-    def wrapper(func: AnyCallable) -> AnyCallable:
-        lock: typing.Optional[asyncio.Lock] = None
-
-        @functools.wraps(func)
-        async def inner(*args: typing.Any, **kwargs: typing.Any) -> typing.Any:
-            nonlocal lock
-            if lock is None:
-                lock = asyncio.Lock()
-
-            async with lock:
-                return await func(*args, **kwargs)
-
-        return inner
-
-    return typing.cast("CallableT", MethodDecorator(func, wrapper))
+    pass
 
 
 class MethodDecorator:

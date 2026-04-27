@@ -53,9 +53,7 @@ class StarRailGameModeFloor(APIModel):
     @pydantic.model_validator(mode="before")
     @classmethod
     def __extract_floor(cls, v: dict[str, typing.Any]) -> dict[str, typing.Any]:
-        extend = v["extend"]
-        v["floor"] = extend["floor"]
-        return v
+        pass
 
 
 class StarRailGameMode(APIModel):
@@ -70,13 +68,7 @@ class StarRailGameMode(APIModel):
     @classmethod
     def __unnest_children(cls, v: dict[str, typing.Any]) -> dict[str, typing.Any]:
         """Unnest the children field."""
-        if not (children := v.get("children")):
-            msg = "Missing 'children' field in HSRGameMode."
-            raise ValueError(msg)
-
-        v["floors"] = children[0]["children"]
-        v["name"] = children[0]["name"]
-        return v
+        pass
 
 
 class StarRailGameModeBuff(APIModel):
@@ -111,8 +103,7 @@ class APCShadowSchedule(StarRailGameModeSchedule):
     @pydantic.model_validator(mode="before")
     @classmethod
     def __convert_buffs(cls, v: dict[str, typing.Any]) -> dict[str, typing.Any]:
-        v["buff"] = {"name": v["maze_buff_name_mi18n"], "desc": v["maze_buff_desc_mi18n"], "icon": v["buff_icon"]}
-        return v
+        pass
 
 
 class MOCSchedule(StarRailGameModeSchedule):
@@ -123,8 +114,7 @@ class MOCSchedule(StarRailGameModeSchedule):
     @pydantic.model_validator(mode="before")
     @classmethod
     def __convert_buffs(cls, v: dict[str, typing.Any]) -> dict[str, typing.Any]:
-        v["buff"] = {"name": v["maze_buff_name_mi18n"], "desc": v["maze_buff_desc_mi18n"]}
-        return v
+        pass
 
 
 class PureFictionSchedule(StarRailGameModeSchedule):
@@ -171,36 +161,13 @@ class StarRailLineup(APIModel):
         cls, v: typing.Sequence[dict[str, typing.Any]]
     ) -> typing.Sequence[typing.Sequence[dict[str, typing.Any]]]:
         # Merge relic info from "group"
-        for g in v:
-            group = g["group"]
-
-            for avatar in g["avatar_details"]:
-                group_avatar = next((a for a in group if a["item_id"] == str(avatar["id"])), None)
-                if not group_avatar:
-                    continue
-
-                relics = group_avatar.get("relics", []) + group_avatar.get("relic_sides", [])
-
-                for relic in avatar.get("relics", []):
-                    group_avatar_relic = next((r for r in relics if r["item_id"] == str(relic["id"])), None)
-                    if not group_avatar_relic:
-                        continue
-
-                    relic.update(group_avatar_relic)
-
-        return [g["avatar_details"] for g in v]
+        pass
 
     @pydantic.model_validator(mode="before")
     @classmethod
     def __nest_player(cls, v: dict[str, typing.Any]) -> dict[str, typing.Any]:
         """Nest the player field."""
-        v["player"] = {
-            "uid": v["account_uid"],
-            "nickname": v["nickname"],
-            "avatar_url": v["avatar_url"],
-            "level": v["game_level"],
-        }
-        return v
+        pass
 
 
 class LineupDetail(APIModel):

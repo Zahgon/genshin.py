@@ -38,21 +38,7 @@ class GenshinAccount(APIModel):
 
     @property
     def game(self) -> types.Game:
-        if "hk4e" in self.game_biz:
-            return types.Game.GENSHIN
-        if "bh3" in self.game_biz:
-            return types.Game.HONKAI
-        if "hkrpg" in self.game_biz:
-            return types.Game.STARRAIL
-        if "nap" in self.game_biz:
-            return types.Game.ZZZ
-        if "nxx" in self.game_biz:
-            return types.Game.TOT
-
-        try:
-            return types.Game(self.game_biz)
-        except ValueError:
-            return self.game_biz  # type: ignore
+        pass
 
 
 class UserInfo(APIModel):
@@ -109,7 +95,7 @@ class PartialHoyolabUser(APIModel):
 
     @pydantic.field_validator("nickname")
     def __remove_highlight(cls, v: str) -> str:
-        return re.sub(r"<.+?>", "", v)
+        pass
 
 
 class HoyolabUserCertification(APIModel):
@@ -179,7 +165,7 @@ class RecordCard(GenshinAccount):
 
     def as_dict(self) -> dict[str, typing.Any]:
         """Return data as a dictionary."""
-        return {d.name: (int(d.value) if d.value.isdigit() else d.value) for d in self.data}
+        pass
 
 
 class GenshinRecordCard(RecordCard):
@@ -187,23 +173,23 @@ class GenshinRecordCard(RecordCard):
 
     @property
     def game(self) -> types.Game:
-        return types.Game.GENSHIN
+        pass
 
     @property
     def days_active(self) -> int:
-        return int(self.data[0].value)
+        pass
 
     @property
     def characters(self) -> int:
-        return int(self.data[1].value)
+        pass
 
     @property
     def achievements(self) -> int:
-        return int(self.data[2].value)
+        pass
 
     @property
     def spiral_abyss(self) -> str:
-        return self.data[3].value
+        pass
 
 
 class HonkaiRecordCard(RecordCard):
@@ -211,23 +197,23 @@ class HonkaiRecordCard(RecordCard):
 
     @property
     def game(self) -> types.Game:
-        return types.Game.HONKAI
+        pass
 
     @property
     def days_active(self) -> int:
-        return int(self.data[0].value)
+        pass
 
     @property
     def stigmata(self) -> int:
-        return int(self.data[1].value)
+        pass
 
     @property
     def battlesuits(self) -> int:
-        return int(self.data[2].value)
+        pass
 
     @property
     def outfits(self) -> int:
-        return int(self.data[3].value)
+        pass
 
 
 class StarRailRecodeCard(RecordCard):
@@ -235,23 +221,23 @@ class StarRailRecodeCard(RecordCard):
 
     @property
     def game(self) -> types.Game:
-        return types.Game.STARRAIL
+        pass
 
     @property
     def days_active(self) -> int:
-        return int(self.data[0].value)
+        pass
 
     @property
     def characters(self) -> int:
-        return int(self.data[1].value)
+        pass
 
     @property
     def achievements(self) -> int:
-        return int(self.data[2].value)
+        pass
 
     @property
     def chests(self) -> int:
-        return int(self.data[3].value)
+        pass
 
 
 class ZZZRecordCard(RecordCard):
@@ -259,20 +245,20 @@ class ZZZRecordCard(RecordCard):
 
     @property
     def game(self) -> types.Game:
-        return types.Game.ZZZ
+        pass
 
     @property
     def days_active(self) -> int:
-        return int(self.data[0].value)
+        pass
 
     @property
     def inter_knot_reputation(self) -> str:
-        return self.data[1].value
+        pass
 
     @property
     def agents_recruited(self) -> int:
-        return int(self.data[2].value)
+        pass
 
     @property
     def bangboo_obtained(self) -> int:
-        return int(self.data[3].value)
+        pass

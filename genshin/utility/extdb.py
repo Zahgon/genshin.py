@@ -103,13 +103,7 @@ ENKA_LANG_MAP = {
 
 async def _fetch_jsons(*urls: str) -> typing.Sequence[typing.Any]:
     """Fetch multiple JSON endpoints."""
-    async with aiohttp.ClientSession() as session:
-
-        async def _fetch_and_parse(url: str) -> typing.Any:
-            r = await session.get(url)
-            return await r.json(content_type=None)
-
-        return await asyncio.gather(*(_fetch_and_parse(url) for url in urls))
+    pass
 
 
 def update_character_name(
@@ -121,8 +115,7 @@ def update_character_name(
     rarity: int,
 ) -> None:
     """Update the character names for a specific language."""
-    char = model_constants.DBChar(id, icon_name, name, element, rarity)
-    model_constants.CHARACTER_NAMES.setdefault(lang, {})[id] = char
+    pass
 
 
 async def update_characters_genshindata(langs: typing.Sequence[str] = ()) -> None:
@@ -130,89 +123,17 @@ async def update_characters_genshindata(langs: typing.Sequence[str] = ()) -> Non
 
     This method requires the download of >20MB per language so it's not recommended.
     """
-    langs = langs or list(LANGS.keys())
-    urls = [GENSHINDATA_TEXTMAP_URL.format(lang=LANG_MAP[lang].upper()) for lang in langs]
-
-    # I love spamming github
-    characters, talent_depot, talents, *textmaps = await _fetch_jsons(
-        GENSHINDATA_CHARACTERS_URL,
-        GENSHINDATA_TALENT_DEPOT_URL,
-        GENSHINDATA_TALENT_URL,
-        *urls,
-    )
-
-    talent_depot = {talent["id"]: talent for talent in talent_depot}
-    talents = {talent["id"]: talent for talent in talents}
-
-    for char in characters:
-        for lang, textmap in zip(langs, textmaps):
-            if char["skillDepotId"] == 101 or char["iconName"].endswith("_Kate") or str(char["id"])[:2] == "11":
-                continue  # test character
-
-            if char["candSkillDepotIds"]:
-                raw_element = "Wind"  # traveler
-            else:
-                talent = talent_depot[char["skillDepotId"]]
-                raw_element = talents[talent["energySkill"]]["costElemType"]
-
-            update_character_name(
-                lang=lang,
-                id=char["id"],
-                icon_name=char["iconName"][len("UI_AvatarIcon_") :],  # noqa: E203
-                name=textmap[str(char["nameTextMapHash"])],
-                element=ELEMENTS_MAP[raw_element],
-                rarity=RARITY_MAP[char["qualityType"]],
-            )
-
-    CACHE_FILE.write_text(json.dumps(model_constants.CHARACTER_NAMES))
+    pass
 
 
 async def update_characters_enka(langs: typing.Sequence[str] = ()) -> None:
     """Update characters with https://github.com/EnkaNetwork/API-docs/."""
-    characters, locs = await _fetch_jsons(ENKA_CHARACTERS_URL, ENKA_LOC_URL)
-
-    for strid, char in characters.items():
-        if "-" in strid or not char:
-            continue  # traveler element
-
-        for short_lang, loc in locs.items():
-            if (lang := ENKA_LANG_MAP.get(short_lang)) is None:
-                continue
-            update_character_name(
-                lang=lang,
-                id=int(strid),
-                icon_name=char["SideIconName"][len("UI_AvatarIcon_Side_") :],  # noqa: E203
-                name=loc[str(char["NameTextMapHash"])],
-                element=ELEMENTS_MAP[char["Element"]],
-                rarity=RARITY_MAP[char["QualityType"]],
-            )
-
-    CACHE_FILE.write_text(json.dumps(model_constants.CHARACTER_NAMES))
+    pass
 
 
 async def update_characters_ambr(langs: typing.Sequence[str] = ()) -> None:
     """Update characters with https://ambr.top/."""
-    version = (await _fetch_jsons(AMBR_VERSION_URL))[0]["data"]["vh"]
-    langs = langs or list(LANGS.keys())
-    urls = [AMBR_URL.format(lang=LANG_MAP[lang]) + f"?vh={version}" for lang in langs]
-
-    characters_list = await _fetch_jsons(*urls)
-
-    for lang, characters in zip(langs, characters_list):
-        for strid, char in characters["data"]["items"].items():
-            if "-" in strid and "anemo" not in strid:
-                continue  # traveler element
-
-            update_character_name(
-                lang=lang,
-                id=int(strid.split("-")[0]),
-                icon_name=char["icon"][len("UI_AvatarIcon_") :],  # noqa: E203
-                name=char["name"],
-                element=ELEMENTS_MAP[char["element"]],
-                rarity=char["rank"],
-            )
-
-    CACHE_FILE.write_text(json.dumps(model_constants.CHARACTER_NAMES))
+    pass
 
 
 async def update_characters_any(
@@ -224,28 +145,4 @@ async def update_characters_any(
 
     Will not re-request data if lenient is True.
     """
-    if not langs:
-        langs = list(LANGS.keys())
-    if isinstance(langs, str):
-        langs = [langs]
-    if lenient:
-        langs = [lang for lang in langs if not model_constants.CHARACTER_NAMES.get(lang)]
-        if len(langs) == 0:
-            return
-
-    if len(langs) == 1:
-        updators = [update_characters_ambr, update_characters_enka]
-    else:
-        updators = [update_characters_enka, update_characters_ambr]
-
-    updators.append(update_characters_genshindata)
-
-    for updator in updators:
-        try:
-            await updator(langs)
-        except Exception:
-            LOGGER_.exception("Failed to update characters with %s", updator.__name__)
-        else:
-            return
-
-    raise Exception("Failed to update characters, all functions raised an error.")
+    pass

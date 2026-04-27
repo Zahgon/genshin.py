@@ -86,17 +86,11 @@ class CalculatorCharacter(character.BaseCharacter):
 
     @pydantic.field_validator("element", mode="before")
     def __parse_element(cls, v: typing.Any) -> str:
-        if isinstance(v, str):
-            return v
-
-        return CALCULATOR_ELEMENTS[int(v)]
+        pass
 
     @pydantic.field_validator("weapon_type", mode="before")
     def __parse_weapon_type(cls, v: typing.Any) -> str:
-        if isinstance(v, str):
-            return v
-
-        return CALCULATOR_WEAPON_TYPES[int(v)]
+        pass
 
 
 class CalculatorWeapon(APIModel, Unique):
@@ -112,10 +106,7 @@ class CalculatorWeapon(APIModel, Unique):
 
     @pydantic.field_validator("type", mode="before")
     def __parse_weapon_type(cls, v: typing.Any) -> str:
-        if isinstance(v, str):
-            return v
-
-        return CALCULATOR_WEAPON_TYPES[int(v)]
+        pass
 
 
 class CalculatorArtifact(APIModel, Unique):
@@ -131,7 +122,7 @@ class CalculatorArtifact(APIModel, Unique):
 
     @property
     def pos_name(self) -> str:
-        return CALCULATOR_ARTIFACTS[self.pos]
+        pass
 
 
 class CalculatorTalent(APIModel, Unique):
@@ -150,34 +141,12 @@ class CalculatorTalent(APIModel, Unique):
 
         Does not work for traveler!
         """
-        # special cases
-        if self.id == self.group_id:
-            return "passive"  # maybe hoyo does this for unapgradables?
-
-        if len(str(self.id)) == 6:  # in candSkillDepotIds
-            return "attack"
-
-        # 4139 -> group=41 identifier=3 order=9
-        _, relevant = divmod(self.group_id, 100)
-        identifier, order = divmod(relevant, 10)
-
-        if identifier == 2:
-            return "passive"
-        elif order == 1:
-            return "attack"
-        elif order == 2:
-            return "skill"
-        elif order == 9:
-            return "burst"
-        elif order == 3:
-            return "dash"
-        else:
-            return None
+        pass
 
     @property
     def upgradeable(self) -> bool:
         """Whether this talent can be leveled up."""
-        return self.type not in ("passive", "dash")
+        pass
 
     def __int__(self) -> int:
         return self.group_id
@@ -204,25 +173,12 @@ class CalculatorCharacterDetails(APIModel):
     @pydantic.field_validator("talents")
     def __correct_talent_current_level(cls, v: typing.Sequence[CalculatorTalent]) -> typing.Sequence[CalculatorTalent]:
         # passive talent have current levels at 0 for some reason
-        talents: list[CalculatorTalent] = []
-
-        for talent in v:
-            if talent.max_level == 1 and talent.level == 0:
-                raw = talent.model_dump()
-                raw["level"] = 1
-                talent = CalculatorTalent(**raw)
-
-            talents.append(talent)
-
-        return v
+        pass
 
     @property
     def upgradeable_talents(self) -> typing.Sequence[CalculatorTalent]:
         """All talents that can be leveled up."""
-        if self.talents[2].type == "dash":
-            return (self.talents[0], self.talents[1], self.talents[3])
-        else:
-            return (self.talents[0], self.talents[1], self.talents[2])
+        pass
 
 
 class CalculatorConsumable(APIModel, Unique):
@@ -317,28 +273,7 @@ class CalculatorResult(APIModel):
 
     @property
     def total(self) -> typing.Sequence[CalculatorConsumable]:
-        talents = [i for t in self.talents for i in t.materials]
-        artifacts = [i for a in self.artifacts for i in a.materials]
-        combined = self.character + self.weapon + talents + artifacts
-
-        grouped: dict[int, list[CalculatorConsumable]] = collections.defaultdict(list)
-        for i in combined:
-            grouped[i.id].append(i)
-
-        total = [
-            CalculatorConsumable(
-                id=x[0].id,
-                name=x[0].name,
-                icon=x[0].icon,
-                wiki_url=x[0].wiki_url,
-                rarity=x[0].rarity,
-                lacking=x[0].lacking,
-                amount=sum(i.amount for i in x),
-            )
-            for x in grouped.values()
-        ]
-
-        return total
+        pass
 
 
 class CalculatorBatchResult(APIModel):
@@ -354,7 +289,7 @@ class CalculatorBatchResult(APIModel):
 
     @property
     def total_remaining_required_materials(self) -> typing.Sequence[CalculatorConsumable]:
-        return [m for m in self.total_materials if m.lacking > 0]
+        pass
 
 
 class CalculatorFurnishingResults(APIModel):
@@ -364,4 +299,4 @@ class CalculatorFurnishingResults(APIModel):
 
     @property
     def total(self) -> typing.Sequence[CalculatorConsumable]:
-        return self.furnishings
+        pass

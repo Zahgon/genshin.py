@@ -146,71 +146,7 @@ async def launch_webapp(
     port: int = 5000,
 ) -> typing.Union[MMTResult, MMTv4Result, SessionMMTResult, SessionMMTv4Result, RiskyCheckMMTResult]:
     """Create and run a webapp to solve a geetest captcha."""
-    routes = web.RouteTableDef()
-    future: asyncio.Future[typing.Any] = asyncio.Future()
-
-    @routes.get("/")
-    async def index(request: web.Request) -> web.StreamResponse:
-        body = CAPTCHA_PAGE
-        body = body.replace("{gt_version}", "4" if isinstance(mmt, MMTv4) else "3")
-        body = body.replace("{api_server}", api_server or "api-na.geetest.com")
-        body = body.replace("{lang}", lang or "en")
-        body = body.replace("{for_new_os_app}", str(for_new_os_app).lower() if for_new_os_app is not None else "false")
-        return web.Response(body=body, content_type="text/html")
-
-    @routes.get("/gt/{version}.js")
-    async def gt(request: web.Request) -> web.StreamResponse:
-        version = request.match_info.get("version", "v3")
-        gt_url = GT_V4_URL if version == "v4" else GT_V3_URL
-
-        async with aiohttp.ClientSession() as session:
-            r = await session.get(gt_url)
-            content = await r.read()
-
-        return web.Response(body=content, content_type="text/javascript")
-
-    @routes.get("/mmt")
-    async def mmt_endpoint(request: web.Request) -> web.Response:
-        return web.json_response(mmt.model_dump())
-
-    @routes.post("/send-data")
-    async def send_data_endpoint(request: web.Request) -> web.Response:
-        data = await request.json()
-        result: typing.Union[MMTResult, MMTv4Result, SessionMMTResult, SessionMMTv4Result, RiskyCheckMMTResult]
-        if isinstance(mmt, RiskyCheckMMT):
-            result = RiskyCheckMMTResult(**data)
-        elif isinstance(mmt, SessionMMT):
-            result = SessionMMTResult(**data)
-        elif isinstance(mmt, SessionMMTv4):
-            result = SessionMMTv4Result(**data)
-        elif isinstance(mmt, MMT):
-            result = MMTResult(**data)
-        else:
-            result = MMTv4Result(**data)
-
-        future.set_result(result)
-        return web.Response(status=204)
-
-    app = web.Application()
-    app.add_routes(routes)
-
-    runner = web.AppRunner(app)
-    await runner.setup()
-
-    site = web.TCPSite(runner, host="localhost", port=port)
-    print(f"Opening http://localhost:{port} in browser...")  # noqa
-    webbrowser.open_new_tab(f"http://localhost:{port}")
-
-    await site.start()
-
-    try:
-        data = await future
-    finally:
-        await asyncio.sleep(0.3)
-        await runner.shutdown()
-        await runner.cleanup()
-
-    return data
+    pass
 
 
 @typing.overload
@@ -267,16 +203,9 @@ async def solve_geetest(
     port: int = 5000,
 ) -> typing.Union[MMTResult, MMTv4Result, SessionMMTResult, SessionMMTv4Result, RiskyCheckMMTResult]:
     """Start a web server and manually solve geetest captcha."""
-    geetest_lang = auth_utility.lang_to_geetest_lang(lang)
-    return await launch_webapp(
-        mmt,
-        lang=geetest_lang,
-        api_server=api_server,
-        for_new_os_app=for_new_os_app,
-        port=port,
-    )
+    pass
 
 
 async def enter_code(*, prompt: str = "Enter the verification code: ") -> str:
     """Get email or phone number verification code from the user via CLI input."""
-    return await asyncio.to_thread(input, prompt)
+    pass

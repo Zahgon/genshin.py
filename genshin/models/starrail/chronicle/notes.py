@@ -20,11 +20,11 @@ class StarRailExpedition(APIModel):
     @property
     def finished(self) -> bool:
         """Whether the expedition has finished."""
-        return self.remaining_time <= datetime.timedelta(0)
+        pass
 
     @property
     def completion_time(self) -> datetime.datetime:
-        return datetime.datetime.now().astimezone() + self.remaining_time
+        pass
 
 
 class StarRailNote(APIModel):
@@ -65,4 +65,4 @@ class StarRailNote(APIModel):
     @property
     def stamina_recovery_time(self) -> datetime.datetime:
         """The time when stamina will be recovered."""
-        return datetime.datetime.now().astimezone() + self.stamina_recover_time
+        pass

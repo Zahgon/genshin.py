@@ -44,33 +44,24 @@ class GenshinClient(clients.Client):
     @property
     def session(self) -> aiohttp.ClientSession:
         """The current client session, created when needed."""
-        deprecation.warn_deprecated(self.__class__.session)
-        return self.cookie_manager.create_session()
+        pass
 
     @property
     def cookies(self) -> typing.Mapping[str, str]:
         """The cookie jar belonging to the current session."""
-        deprecation.warn_deprecated(self.__class__.cookies, alternative="cookie_manager")
-        return getattr(self.cookie_manager, "cookies")
+        pass
 
     @cookies.setter
     def cookies(self, cookies: typing.Mapping[str, typing.Any]) -> None:
-        deprecation.warn_deprecated("Setting cookies with GenshinClient.cookies", alternative="set_cookies")
-        setattr(self.cookie_manager, "cookies", cookies)
+        pass
 
     @property
     def uid(self) -> typing.Optional[int]:
-        deprecation.warn_deprecated(self.__class__.uid, alternative="Client.uids[genshin.Game.GENSHIN]")
-        return self.uids[types.Game.GENSHIN]
+        pass
 
     @uid.setter
     def uid(self, uid: typing.Optional[int]) -> None:
-        deprecation.warn_deprecated(
-            "Setting uid with GenshinClient.uid",
-            alternative="Client.uids[genshin.Game.GENSHIN]",
-        )
-        if uid is not None:
-            self.uids[types.Game.GENSHIN] = uid
+        pass
 
     @deprecation.deprecated()
     async def __aenter__(self) -> GenshinClient:
@@ -87,7 +78,7 @@ class GenshinClient(clients.Client):
         lang: typing.Optional[str] = None,
     ) -> models.PartialGenshinUserStats:
         """Get partial genshin user without character equipment."""
-        return await self.get_partial_genshin_user(uid, lang=lang)
+        pass
 
     @deprecation.deprecated("get_genshin_characters")
     async def get_characters(
@@ -97,7 +88,7 @@ class GenshinClient(clients.Client):
         lang: typing.Optional[str] = None,
     ) -> typing.Sequence[models.Character]:
         """Get genshin user characters."""
-        return await self.get_genshin_characters(uid, lang=lang)
+        pass
 
     @deprecation.deprecated("get_genshin_user")
     async def get_user(
@@ -107,7 +98,7 @@ class GenshinClient(clients.Client):
         lang: typing.Optional[str] = None,
     ) -> models.GenshinUserStats:
         """Get genshin user."""
-        return await self.get_genshin_user(uid, lang=lang)
+        pass
 
     @deprecation.deprecated("get_full_genshin_user")
     async def get_full_user(
@@ -117,7 +108,7 @@ class GenshinClient(clients.Client):
         lang: typing.Optional[str] = None,
     ) -> models.FullGenshinUserStats:
         """Get a user with all their possible data."""
-        return await self.get_full_genshin_user(uid, lang=lang)
+        pass
 
 
 class ChineseClient(GenshinClient):

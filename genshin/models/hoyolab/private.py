@@ -17,4 +17,4 @@ class AccountInfo(APIModel):
 
     @property
     def login_ticket(self) -> str:
-        return self.weblogin_token
+        pass

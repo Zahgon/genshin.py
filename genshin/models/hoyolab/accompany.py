@@ -65,18 +65,11 @@ class AccompanyCharacterGame(APIModel):
 
     @field_validator("attributes", mode="before")
     def __unnest_attributes(cls, v: list[dict[str, Any]]) -> list[list[dict[str, Any]]]:
-        return [group["attribute_list"] for group in v]
+        pass
 
     @property
     def game(self) -> types.Game:
-        if self.id == 2:
-            return types.Game.GENSHIN
-        if self.id == 6:
-            return types.Game.STARRAIL
-        if self.id == 8:
-            return types.Game.ZZZ
-
-        raise ValueError(f"Unknown game ID: {self.id}")
+        pass
 
 
 class AccompanyResult(APIModel):

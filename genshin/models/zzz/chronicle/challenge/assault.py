@@ -61,15 +61,11 @@ class DeadlyAssaultChallenge(APIModel):
 
     @pydantic.field_validator("challenge_time", mode="before")
     def __parse_datetime(cls, value: typing.Mapping[str, typing.Any]) -> typing.Optional[TZDateTime]:
-        if value:
-            return datetime.datetime(**value)
-        return None
+        pass
 
     @pydantic.field_validator("boss", mode="before")
     def __parse_boss(cls, value: typing.List[typing.Mapping[str, typing.Any]]) -> DeadlyAssaultBoss:
-        if not value:
-            raise ValueError("No boss data provided.")
-        return DeadlyAssaultBoss(**value[0])
+        pass
 
 
 class DeadlyAssault(APIModel):
@@ -90,4 +86,4 @@ class DeadlyAssault(APIModel):
 
     @pydantic.field_validator("rank_percent", mode="before")
     def __parse_rank_percent(cls, value: int) -> str:
-        return f"{value / 100}%"
+        pass

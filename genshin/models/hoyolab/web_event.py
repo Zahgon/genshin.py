@@ -24,6 +24,4 @@ class WebEvent(APIModel):
 
     @property
     def url(self) -> str:
-        if "https" in self.web_path:
-            return self.web_path
-        return f"https://www.hoyolab.com{self.web_path}"
+        pass

@@ -73,7 +73,7 @@ class HyakuninIkkiBattle(APIModel):
     @pydantic.field_validator("characters", mode="before")
     def __validate_characters(cls, value: typing.Sequence[typing.Any]) -> typing.Sequence[typing.Any]:
         """Remove characters with a null id."""
-        return [character for character in value if character["id"]]
+        pass
 
 
 class HyakuninIkki(APIModel):
@@ -90,8 +90,7 @@ class HyakuninIkki(APIModel):
 
     @property
     def medal(self) -> str:
-        match = re.search(r"heraldry_(\w+)\.png", self.medal_icon)
-        return match.group(1) if match else ""
+        pass
 
 
 # ---------------------------------------------------------
@@ -215,7 +214,7 @@ class Potion(APIModel):
 
 
 # ---------------------------------------------------------
-# Summer：
+# Summerï¼š
 
 
 class SummerMemories(APIModel):
@@ -228,10 +227,7 @@ class SummerMemories(APIModel):
 
     @pydantic.field_validator("finish_time", mode="before")
     def __validate_time(cls, value: typing.Any) -> typing.Optional[datetime.datetime]:
-        if value is None or isinstance(value, datetime.datetime):
-            return value
-
-        return datetime.datetime(value["year"], value["month"], value["day"], value["hour"], value["minute"])
+        pass
 
 
 class SummerSurfpiercer(APIModel):
@@ -255,10 +251,7 @@ class SummerRealmExploration(APIModel):
 
     @pydantic.field_validator("finish_time", mode="before")
     def __validate_time(cls, value: typing.Any) -> typing.Optional[datetime.datetime]:
-        if value is None or isinstance(value, datetime.datetime):
-            return value
-
-        return datetime.datetime(value["year"], value["month"], value["day"], value["hour"], value["minute"])
+        pass
 
 
 class Summer(APIModel):
@@ -274,10 +267,7 @@ class Summer(APIModel):
 
     @pydantic.field_validator("surfpiercer", "memories", "realm_exploration", mode="before")
     def __flatten_records(cls, value: typing.Any) -> typing.Sequence[typing.Any]:
-        if isinstance(value, typing.Sequence):
-            return typing.cast("typing.Sequence[object]", value)
-
-        return value["records"]
+        pass
 
 
 # ---------------------------------------------------------
@@ -311,22 +301,4 @@ class Activities(APIModel):
 
     @pydantic.model_validator(mode="before")
     def __flatten_activities(cls, values: dict[str, typing.Any]) -> dict[str, typing.Any]:
-        if not values.get("activities"):
-            return values
-
-        slugs = {  # type: ignore
-            field.json_schema_extra["gslug"]: name
-            for name, field in Activities.model_fields.items()
-            if isinstance(field.json_schema_extra, dict) and field.json_schema_extra.get("gslug")
-        }
-
-        activites: list[dict[str, typing.Any]] = values["activities"]
-        for activity in activites:
-            for name, value in activity.items():
-                if "exists_data" not in value:
-                    continue
-
-                name_ = slugs.get(name, name)
-                values[name_] = value if value["exists_data"] else None
-
-        return values
+        pass

@@ -79,7 +79,7 @@ class Diary(BaseDiary):
 
     @property
     def month_data(self) -> MonthDiaryData:
-        return self.data
+        pass
 
 
 class DiaryAction(APIModel):
@@ -135,7 +135,7 @@ class StarRailDiary(BaseDiary):
 
     @property
     def month_data(self) -> StarRailMonthDiaryData:
-        return self.data
+        pass
 
 
 class StarRailDiaryType(enum.IntEnum):

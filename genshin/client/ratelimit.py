@@ -26,13 +26,7 @@ def handle_ratelimits(
     delay: float = 0.5,
 ) -> typing.Callable[[CallableT], CallableT]:
     """Handle ratelimits for requests."""
-    return retry(
-        stop=stop_after_attempt(tries),
-        wait=wait_random_exponential(multiplier=delay, min=delay),
-        retry=retry_if_exception_type(exception),
-        reraise=True,
-        before_sleep=before_sleep_log(LOGGER_, logging.DEBUG),
-    )
+    pass
 
 
 def handle_request_timeouts(
@@ -40,38 +34,9 @@ def handle_request_timeouts(
     delay: float = 0.5,
 ) -> typing.Callable[[CallableT], CallableT]:
     """Handle timeout errors for requests."""
-    return retry(
-        stop=stop_after_attempt(tries),
-        wait=wait_random_exponential(multiplier=delay, min=delay),
-        retry=retry_if_exception_type(TIMEOUT_ERRORS),
-        reraise=True,
-        before_sleep=before_sleep_log(LOGGER_, logging.DEBUG),
-    )
+    pass
 
 
 def handle_proxy_errors(func: CallableT) -> CallableT:
     """If a proxy error occurs, retry the request once without the proxy."""
-    try:
-        from aiohttp_socks import ProxyError
-
-        proxy_errors: typing.Tuple[typing.Type[Exception], ...] = (ProxyError, aiohttp.ClientHttpProxyError)
-    except ImportError:
-        proxy_errors = (aiohttp.ClientHttpProxyError,)
-
-    @functools.wraps(func)  # type: ignore[arg-type]
-    async def wrapper(self: typing.Any, *args: typing.Any, **kwargs: typing.Any) -> typing.Any:
-        try:
-            return await func(self, *args, **kwargs)
-        except proxy_errors:
-            LOGGER_.warning("Proxy error encountered, retrying without proxy.")
-            original_proxy = self._proxy
-            original_socks_proxy = self._socks_proxy
-            self._proxy = None
-            self._socks_proxy = None
-            try:
-                return await func(self, *args, **kwargs)
-            finally:
-                self._proxy = original_proxy
-                self._socks_proxy = original_socks_proxy
-
-    return typing.cast(CallableT, wrapper)
+    pass

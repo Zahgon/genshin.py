@@ -83,14 +83,7 @@ class ShiyuDefenseMonster(APIModel):
     @pydantic.model_validator(mode="before")
     @classmethod
     def __nest_element_effects(cls, v: dict[str, typing.Any]) -> dict[str, typing.Any]:
-        v["element_effects"] = {
-            "ice_weakness": v["ice_weakness"],
-            "fire_weakness": v["fire_weakness"],
-            "elec_weakness": v["elec_weakness"],
-            "ether_weakness": v["ether_weakness"],
-            "physics_weakness": v["physics_weakness"],
-        }
-        return v
+        pass
 
 
 class ShiyuDefenseNode(APIModel):
@@ -105,12 +98,7 @@ class ShiyuDefenseNode(APIModel):
     @pydantic.field_validator("enemies", mode="before")
     @classmethod
     def __convert_enemies(cls, value: dict[typing.Literal["level", "list"], typing.Any]) -> list[ShiyuDefenseMonster]:
-        level = value["level"]
-        result: list[ShiyuDefenseMonster] = []
-        for monster in value["list"]:
-            monster["level"] = level
-            result.append(ShiyuDefenseMonster(**monster))
-        return result
+        pass
 
 
 class ShiyuDefenseFloor(APIModel):
@@ -128,9 +116,7 @@ class ShiyuDefenseFloor(APIModel):
     @pydantic.field_validator("challenge_time", mode="before")
     @classmethod
     def __parse_datetime(cls, value: typing.Mapping[str, typing.Any]) -> typing.Optional[TZDateTime]:
-        if value:
-            return datetime.datetime(**value)
-        return None
+        pass
 
 
 class ShiyuDefenseV1(APIModel):
@@ -151,19 +137,13 @@ class ShiyuDefenseV1(APIModel):
     def __convert_ratings(
         cls, v: list[dict[typing.Literal["times", "rating"], typing.Any]]
     ) -> typing.Mapping[typing.Literal["S", "A", "B"], int]:
-        return {d["rating"]: d["times"] for d in v}
+        pass
 
     @pydantic.computed_field  # type: ignore[prop-decorator]
     @property
     def total_clear_time(self) -> int:
         """Total clear time for all floors in seconds."""
-        total = 0
-        for floor in self.floors:
-            for node in (floor.node_1, floor.node_2):
-                if node.battle_time is None:
-                    continue
-                total += int(node.battle_time.total_seconds())
-        return total
+        pass
 
 
 ShiyuDefense = ShiyuDefenseV1  # Backward compatibility
@@ -223,11 +203,11 @@ class ShiyuV2BriefInfo(APIModel):
     def __parse_rating(
         cls, value: typing.Literal["S+", "S", "A", "B", ""]
     ) -> typing.Optional[typing.Literal["S+", "S", "A", "B"]]:
-        return value or None
+        pass
 
     @pydantic.field_validator("rank_percent", mode="before")
     def __parse_rank_percent(cls, value: int) -> str:
-        return f"{value / 100}%"
+        pass
 
 
 class ShiyuDefenseV2(APIModel):

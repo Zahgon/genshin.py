@@ -39,19 +39,4 @@ class ZZZGachaInfo(APIModel):
     @pydantic.model_validator(mode="before")
     @classmethod
     def __convert_currencies(cls, data: dict[str, typing.Any]) -> dict[str, typing.Any]:
-        currency_mapping = {
-            "GACHA_TICKET_TYPE_RECHARGE_MONOCHROME": "monochrome",
-            "GACHA_TICKET_TYPE_POLYCHROME": "polychrome",
-            "GACHA_TICKET_TYPE_ENCRYPTED_MASTER_TAPE": "encrypted_master_tape",
-            "GACHA_TICKET_TYPE_MASTER_TAPE": "master_tape",
-            "GACHA_TICKET_TYPE_BOOPON": "boopon",
-        }
-
-        tickets = data.get("tickets", [])
-        converted_currencies = {
-            currency_mapping[ticket["ticket_type"]]: ticket["ticket_cnt"]
-            for ticket in tickets
-            if ticket["ticket_type"] in currency_mapping
-        }
-        data["currencies"] = converted_currencies
-        return data
+        pass

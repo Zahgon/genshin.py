@@ -24,12 +24,12 @@ class MemorialArenaStats(APIModel):
 
     @pydantic.field_validator("ranking", mode="before")
     def __normalize_ranking(cls, value: typing.Union[str, float]) -> float:
-        return float(value) if value else 0
+        pass
 
     @property
     def rank(self) -> str:
         """The user's Memorial Arena rank as displayed in-game."""
-        return modes.prettify_MA_rank(self.raw_rank)
+        pass
 
 
 # flake8: noqa: E222
@@ -59,13 +59,7 @@ class OldAbyssStats(APIModel):
 
     @pydantic.field_validator("raw_q_singularis_rank", "raw_dirac_sea_rank", "raw_latest_rank", mode="before")
     def __normalize_rank(cls, rank: typing.Optional[str]) -> typing.Optional[int]:  # modes.OldAbyss.__normalize_rank
-        if isinstance(rank, int):
-            return rank
-
-        if rank is None or "Unknown" in rank:
-            return None
-
-        return 69 - ord(rank)
+        pass
 
     model_config: pydantic.ConfigDict = pydantic.ConfigDict(frozen=False)  # type: ignore
 
@@ -101,18 +95,7 @@ class HonkaiStats(APIModel):
 
     @pydantic.model_validator(mode="before")
     def __pack_gamemode_stats(cls, values: dict[str, typing.Any]) -> dict[str, typing.Any]:
-        if "new_abyss" in values:
-            values["abyss"] = SuperstringAbyssStats(**values["new_abyss"], **values)
-        elif "old_abyss" in values:
-            values["abyss"] = OldAbyssStats(**values["old_abyss"], **values)
-
-        if "memorial_arena" not in values:
-            values["memorial_arena"] = MemorialArenaStats(**values)
-
-        if "elysian_realm" not in values:
-            values["elysian_realm"] = ElysianRealmStats(**values)
-
-        return values
+        pass
 
 
 class HonkaiUserStats(APIModel):
@@ -133,4 +116,4 @@ class FullHonkaiUserStats(HonkaiUserStats):
     @property
     def abyss_superstring(self) -> typing.Sequence[modes.SuperstringAbyss]:
         """Filter `self.abyss` to only return instances of Superstring Abyss."""
-        return [entry for entry in self.abyss if isinstance(entry, modes.SuperstringAbyss)]
+        pass

@@ -65,7 +65,7 @@ class ZZZEvent(APIModel):
 
     @pydantic.field_validator("status", mode="before")
     def __validate_status(cls, v: str) -> typing.Union[ZZZEventStatus, str]:
-        return prevent_enum_error(v, ZZZEventStatus)
+        pass
 
 
 class ZZZGachaEvent(APIModel):
@@ -88,11 +88,11 @@ class ZZZGachaEvent(APIModel):
 
     @pydantic.field_validator("type", mode="before")
     def __validate_type(cls, v: str) -> typing.Union[ZZZGachaEventType, str]:
-        return prevent_enum_error(v, ZZZGachaEventType)
+        pass
 
     @pydantic.field_validator("status", mode="before")
     def __validate_status(cls, v: str) -> typing.Union[ZZZGachaEventStatus, str]:
-        return prevent_enum_error(v, ZZZGachaEventStatus)
+        pass
 
 
 class ZZZGachaEventCharacter(APIModel):

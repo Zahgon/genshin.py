@@ -22,12 +22,7 @@ class WikiClient(base.BaseClient):
         **kwargs: typing.Any,
     ) -> typing.Mapping[str, typing.Any]:
         """Make a request towards the wiki endpoint."""
-        headers = dict(headers or {})
-
-        url = routes.WIKI_URL.get_url() / endpoint
-        headers["x-rpc-language"] = lang or self.lang
-
-        return await self.request(url, headers=headers, **kwargs)
+        pass
 
     @typing.overload
     async def get_wiki_previews(  # noqa: D102 missing docstring in overload?
@@ -76,13 +71,7 @@ class WikiClient(base.BaseClient):
         lang: typing.Optional[str] = None,
     ) -> typing.Sequence[models.BaseWikiPreview]:
         """Get a list of wiki previews."""
-        payload = dict(filters=[], menu_id=int(menu), page_num=1, page_size=1000, use_es=True)
-        cache_key = cache.cache_key("wiki", endpoint="entry", menu=menu, lang=lang or self.lang)
-        data = await self.request_wiki("get_entry_page_list", data=payload, lang=lang, static_cache=cache_key)
-
-        cls = models._ENTRY_PAGE_MODELS.get(typing.cast(models.WikiPageType, menu), models.BaseWikiPreview)
-
-        return [cls(**i) for i in data["list"] if i["icon_url"]]
+        pass
 
     async def get_wiki_page(
         self,
@@ -91,12 +80,7 @@ class WikiClient(base.BaseClient):
         lang: typing.Optional[str] = None,
     ) -> models.WikiPage:
         """Get a wiki page."""
-        params = dict(entry_page_id=int(id))
-        cache_key = cache.cache_key("wiki", endpoint="page", id=id, lang=lang or self.lang)
-        data = await self.request_wiki("entry_page", lang=lang, params=params, static_cache=cache_key)
-
-        data["page"].pop("lang", "")  # always an empty string
-        return models.WikiPage(**data["page"])
+        pass
 
     async def get_wiki_pages(
         self,
@@ -105,7 +89,4 @@ class WikiClient(base.BaseClient):
         lang: typing.Optional[str] = None,
     ) -> typing.Sequence[models.WikiPage]:
         """Get multiple wiki pages without modules."""
-        payload = dict(entry_page_ids=[int(i) for i in ids])
-        data = await self.request_wiki("entry_pages", lang=lang, data=payload)
-
-        return [models.WikiPage(**i) for i in data["entry_pages"]]
+        pass

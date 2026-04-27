@@ -23,19 +23,7 @@ __all__ = [
 
 
 def _process_timedelta(time: typing.Union[int, datetime.timedelta, datetime.datetime]) -> datetime.datetime:
-    if isinstance(time, int):
-        time = datetime.datetime.fromtimestamp(time).astimezone()
-
-    if isinstance(time, datetime.timedelta):
-        time = datetime.datetime.now().astimezone() + time
-
-    if time < datetime.datetime(2000, 1, 1).astimezone():
-        delta = datetime.timedelta(seconds=int(time.timestamp()))
-        time = datetime.datetime.now().astimezone() + delta
-
-    time = time.replace(second=0, microsecond=0)
-
-    return time
+    pass
 
 
 class Expedition(APIModel):
@@ -47,16 +35,16 @@ class Expedition(APIModel):
 
     @pydantic.field_validator("remaining_time", mode="before")
     def __process_timedelta(cls, v: str) -> datetime.timedelta:
-        return datetime.timedelta(seconds=int(v))
+        pass
 
     @property
     def finished(self) -> bool:
         """Whether the expedition has finished."""
-        return self.remaining_time <= datetime.timedelta(0)
+        pass
 
     @property
     def completion_time(self) -> datetime.datetime:
-        return datetime.datetime.now().astimezone() + self.remaining_time
+        pass
 
 
 class TransformerTimedelta(datetime.timedelta):
@@ -64,24 +52,19 @@ class TransformerTimedelta(datetime.timedelta):
 
     @property
     def timedata(self) -> tuple[int, int, int, int]:
-        seconds: int = super().seconds
-        days: int = super().days
-        hour, second = divmod(seconds, 3600)
-        minute, second = divmod(second, 60)
-
-        return days, hour, minute, second
+        pass
 
     @property
     def hours(self) -> int:
-        return self.timedata[1]
+        pass
 
     @property
     def minutes(self) -> int:
-        return self.timedata[2]
+        pass
 
     @property
     def seconds(self) -> int:
-        return self.timedata[3]
+        pass
 
 
 class TaskRewardStatus(str, enum.Enum):
@@ -99,7 +82,7 @@ class TaskReward(APIModel):
 
     @pydantic.field_validator("status", mode="before")
     def __prevent_enum_crash(cls, v: str) -> typing.Union[TaskRewardStatus, str]:
-        return prevent_enum_error(v, TaskRewardStatus)
+        pass
 
 
 class AttendanceRewardStatus(str, enum.Enum):
@@ -119,7 +102,7 @@ class AttendanceReward(APIModel):
 
     @pydantic.field_validator("status", mode="before")
     def __prevent_enum_crash(cls, v: str) -> typing.Union[AttendanceRewardStatus, str]:
-        return prevent_enum_error(v, AttendanceRewardStatus)
+        pass
 
 
 class DailyTasks(APIModel):
@@ -191,39 +174,25 @@ class Notes(APIModel):
 
     @pydantic.field_validator("remaining_resin_recovery_time", "remaining_realm_currency_recovery_time", mode="before")
     def __process_timedelta(cls, v: str) -> datetime.timedelta:
-        return datetime.timedelta(seconds=int(v))
+        pass
 
     @property
     def resin_recovery_time(self) -> datetime.datetime:
         """The time when resin will be recovered."""
-        return datetime.datetime.now().astimezone() + self.remaining_resin_recovery_time
+        pass
 
     @property
     def realm_currency_recovery_time(self) -> datetime.datetime:
         """The time when realm currency will be recovered."""
-        return datetime.datetime.now().astimezone() + self.remaining_realm_currency_recovery_time
+        pass
 
     @property
     def transformer_recovery_time(self) -> typing.Optional[datetime.datetime]:
         """The time the transformer will be recovered."""
-        if self.remaining_transformer_recovery_time is None:
-            return None
-
-        remaining = datetime.datetime.now().astimezone() + self.remaining_transformer_recovery_time
-        return remaining
+        pass
 
     @pydantic.model_validator(mode="before")
     def __flatten_transformer(cls, values: dict[str, typing.Any]) -> dict[str, typing.Any]:
-        if "transformer_recovery_time" in values:
-            return values
-
-        if values.get("transformer") and values["transformer"]["obtained"]:
-            t = values["transformer"]["recovery_time"]
-            delta = TransformerTimedelta(days=t["Day"], hours=t["Hour"], minutes=t["Minute"], seconds=t["Second"])
-            values["remaining_transformer_recovery_time"] = delta
-        else:
-            values["remaining_transformer_recovery_time"] = None
-
-        return values
+        pass
 
     daily_task: DailyTasks

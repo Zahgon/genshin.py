@@ -61,7 +61,7 @@ class GenshinException(Exception):
 
     @property
     def response(self) -> typing.Mapping[str, typing.Any]:
-        return {"retcode": self.retcode, "message": self.original, "data": None}
+        pass
 
 
 class InternalDatabaseError(GenshinException):
@@ -349,44 +349,9 @@ def raise_for_retcode(data: dict[str, typing.Any]) -> typing.NoReturn:
     daily reward:
         -500x = already claimed the daily reward
     """
-    r, m = data.get("retcode", 0), data.get("message", "")
-
-    if m.startswith("authkey"):
-        if r == -100:
-            raise InvalidAuthkey(data)
-        elif r == -101:
-            raise AuthkeyTimeout(data)
-        else:
-            raise AuthkeyException(data)
-
-    if r in ERRORS:
-        exctype, msg = ERRORS[r]
-        raise exctype(data, m or msg)
-
-    if "redemption" in m:
-        raise RedemptionException(data)
-
-    raise GenshinException(data)
+    pass
 
 
 def check_for_geetest(data: dict[str, typing.Any]) -> None:
     """Check if geetest was triggered during the request and raise an error if so."""
-    retcode = data.get("retcode")
-    if retcode is not None and retcode in GEETEST_RETCODES:
-        raise GeetestError(data)
-
-    if not data.get("data"):  # if is an error
-        return
-
-    gt_result: typing.Any = data["data"].get("gt_result", data["data"])
-
-    if not gt_result:
-        return
-
-    if (
-        gt_result.get("risk_code") != 0
-        and gt_result.get("gt")
-        and gt_result.get("challenge")
-        and gt_result.get("success") != 0
-    ):
-        raise DailyGeetestTriggered(data, gt=gt_result.get("gt", ""), challenge=gt_result.get("challenge", ""))
+    pass

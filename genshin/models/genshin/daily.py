@@ -17,8 +17,7 @@ class DailyRewardInfo(typing.NamedTuple):
 
     @property
     def missed_rewards(self) -> int:
-        now = datetime.datetime.now(CN_TIMEZONE)
-        return now.day - self.claimed_rewards
+        pass
 
 
 class DailyReward(APIModel):

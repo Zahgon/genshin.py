@@ -30,25 +30,7 @@ def _get_browser_cookies(
 
     Available browsers: chrome, chromium, opera, edge, firefox.
     """
-    import browser_cookie3  # pyright: ignore
-
-    if browser is None:
-        if cookie_file is not None:
-            raise TypeError("Cannot use a cookie_file without a specified browser.")
-
-        loader = browser_cookie3.load  # pyright: ignore
-
-    else:
-        if browser not in ("chrome", "chromium", "opera", "brave", "edge", "firefox"):
-            raise ValueError(f"Unsupported browser: {browser}")
-
-        loader = getattr(browser_cookie3, browser)  # pyright: ignore
-        loader = functools.partial(loader, cookie_file=cookie_file)
-
-    loader = typing.cast("typing.Callable[..., typing.Any]", loader)
-
-    domains = domains or [""]
-    return {cookie.name: str(cookie.value) for domain in domains for cookie in loader(domain_name=domain)}
+    pass
 
 
 def get_browser_cookies(
@@ -62,17 +44,12 @@ def get_browser_cookies(
 
     Available browsers: chrome, chromium, opera, edge, firefox.
     """
-    cookies = _get_browser_cookies(browser, cookie_file=cookie_file, domains=domains)
-    return {name: value for name, value in cookies.items() if name in allowed_cookies}
+    pass
 
 
 def get_tempdir() -> pathlib.Path:
     """Get the temporary directory to be used by genshin.py."""
-    tempdir = pathlib.Path(tempfile.gettempdir())
-    directory = tempdir / "genshinpy"
-    directory.mkdir(exist_ok=True, parents=True)
-
-    return directory
+    pass
 
 
 if __name__ == "__main__":

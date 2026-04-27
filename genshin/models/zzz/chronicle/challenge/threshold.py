@@ -34,7 +34,7 @@ class ThresholdSimulationInfo(APIModel):
 
     @pydantic.field_validator("rank_percent", mode="before")
     def __parse_rank_percent(cls, value: int) -> str:
-        return f"{value / 100}%"
+        pass
 
 
 class ThresholdSimulationCharacter(APIModel):

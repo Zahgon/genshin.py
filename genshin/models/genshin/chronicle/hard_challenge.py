@@ -69,7 +69,7 @@ class HardChallengeBestRecord(APIModel):
     @pydantic.field_validator("icon")
     @classmethod
     def __parse_icon(cls, v: str) -> str:
-        return v.split(",")[-1]
+        pass
 
 
 class HardChallengeCharacter(APIModel):
@@ -103,11 +103,7 @@ class HardChallengeEnemyTag(APIModel):
     @classmethod
     def __parse_elements(cls, v: dict[str, typing.Any]) -> dict[str, typing.Any]:
         """Parse elements from string to HardChallengeTagElement enum."""
-        desc = v.get("desc", "")
-        for element in HardChallengeTagElement:
-            if element.value in desc:
-                v.setdefault("elements", []).append(element)
-        return v
+        pass
 
 
 class HardChallengeEnemy(APIModel):

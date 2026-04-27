@@ -34,7 +34,7 @@ class ZZZStats(APIModel):
     def __unnest_hia_coin(
         cls, v: typing.List[typing.Dict[str, typing.Any]]
     ) -> typing.Optional[typing.Dict[str, typing.Any]]:
-        return v[0] if v else None
+        pass
 
 
 class ZZZCatNote(APIModel):

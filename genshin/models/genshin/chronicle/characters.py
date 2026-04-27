@@ -102,7 +102,7 @@ class Constellation(APIModel, Unique):
     @property
     def scaling(self) -> bool:
         """Whether the constellation is simply for talent scaling"""
-        return "U" in self.icon
+        pass
 
 
 class Outfit(APIModel, Unique):
@@ -132,7 +132,7 @@ class PropInfo(APIModel):
     @classmethod
     def __fix_names(cls, value: str) -> str:
         r"""Fix "\xa0" in Crit Damage + Crit Rate names."""
-        return value.replace("\xa0", " ")
+        pass
 
 
 class PropertyValue(APIModel):
@@ -227,48 +227,4 @@ class GenshinDetailCharacters(APIModel):
     @pydantic.model_validator(mode="before")
     def __fill_prop_info(cls, values: dict[str, typing.Any]) -> typing.Mapping[str, typing.Any]:
         """Fill property info from properety_map."""
-        relic_property_options: dict[str, list[int]] = values.get("relic_property_options", {})
-        prop_map: dict[str, dict[str, typing.Any]] = values.get("property_map", {})
-        characters: list[dict[str, typing.Any]] = values.get("list", [])
-
-        # Map properties to artifacts
-        new_relic_prop_options: dict[str, list[dict[str, typing.Any]]] = {}
-        for relic_type, properties in relic_property_options.items():
-            formatted_properties: list[dict[str, typing.Any]] = [
-                prop_map[str(prop)] for prop in properties if str(prop) in prop_map
-            ]
-            new_relic_prop_options[relic_type] = formatted_properties
-
-        # Override relic_property_options
-        values["relic_property_options"] = new_relic_prop_options
-
-        for char in characters:
-            # Extract character info from .base
-            for key, value in char["base"].items():
-                if key == "weapon":  # Ignore .weapon in base as it does not have full info.
-                    continue
-                char[key] = value
-
-            # Map properties to main/sub stat for weapon.
-            main_property = char["weapon"]["main_property"]
-            char["weapon"]["main_property"]["info"] = prop_map[str(main_property["property_type"])]
-            if sub_property := char["weapon"]["sub_property"]:
-                char["weapon"]["sub_property"]["info"] = prop_map[str(sub_property["property_type"])]
-
-            # Map properties to artifacts
-            for artifact in char["relics"]:
-                main_property = artifact["main_property"]
-                artifact["main_property"]["info"] = prop_map[str(main_property["property_type"])]
-                for sub_property in artifact["sub_property_list"]:
-                    sub_property["info"] = prop_map[str(sub_property["property_type"])]
-
-            # Map character properties
-            for prop in (
-                char["base_properties"]
-                + char["selected_properties"]
-                + char["extra_properties"]
-                + char["element_properties"]
-            ):
-                prop["info"] = prop_map[str(prop["property_type"])]
-
-        return values
+        pass

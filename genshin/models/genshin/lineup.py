@@ -51,25 +51,11 @@ class PartialLineupCharacter(character.BaseCharacter):
 
     @pydantic.field_validator("element", mode="before")
     def __parse_element(cls, value: typing.Any) -> str:
-        if isinstance(value, str) and not value.isdigit():
-            return value
-
-        return {
-            1: "Pyro",
-            2: "Anemo",
-            3: "Geo",
-            4: "Dendro",
-            5: "Electro",
-            6: "Hydro",
-            7: "Cryo",
-        }[int(value)]
+        pass
 
     @pydantic.field_validator("weapon_type", mode="before")
     def __parse_weapon_type(cls, value: typing.Any) -> str:
-        if isinstance(value, str) and not value.isdigit():
-            return value
-
-        return CALCULATOR_WEAPON_TYPES[int(value)]
+        pass
 
 
 class PartialLineupWeapon(APIModel, Unique):
@@ -83,10 +69,7 @@ class PartialLineupWeapon(APIModel, Unique):
 
     @pydantic.field_validator("type", mode="before")
     def __parse_weapon_type(cls, value: int) -> str:
-        if isinstance(value, str) and not value.isdigit():
-            return value
-
-        return CALCULATOR_WEAPON_TYPES[value]
+        pass
 
 
 class PartialLineupArtifactSet(APIModel, Unique):
@@ -112,35 +95,16 @@ class LineupArtifactStatFields(APIModel):
     @pydantic.model_validator(mode="before")
     def __flatten_stats(cls, values: dict[str, typing.Any]) -> dict[str, typing.Any]:
         """Name certain stats."""
-        if "reliquary_fst_attr" not in values:
-            return values
-
-        artifact_ids = {  # type: ignore
-            field.json_schema_extra["artifact_id"]: name
-            for name, field in LineupArtifactStatFields.model_fields.items()
-            if isinstance(field.json_schema_extra, dict) and field.json_schema_extra.get("artifact_id")
-        }
-
-        for scenario in values["reliquary_fst_attr"]:
-            if scenario["key"] not in artifact_ids:
-                continue
-
-            name = artifact_ids[scenario["key"]]
-            values[name] = scenario["value"]
-
-        return values
+        pass
 
     @pydantic.field_validator("secondary_stats", "flower", "plume", "sands", "goblet", "circlet", mode="before")
     def __parse_secondary_stats(cls, value: typing.Any) -> dict[int, str]:
-        if not isinstance(value, typing.Sequence):
-            return value
-
-        return {stat["id"]: stat["name"] for stat in value}  # type: ignore
+        pass
 
     @property
     def all_stats(self) -> typing.Mapping[int, str]:
         """All possible stats for any artifact."""
-        return {**self.flower, **self.plume, **self.sands, **self.goblet, **self.circlet, **self.secondary_stats}
+        pass
 
 
 class LineupFields(APIModel):
@@ -175,34 +139,17 @@ class LineupScenario(APIModel, Unique):
 
     @staticmethod
     def _pre_flatten_scenarios(class_: typing.Any, values: dict[str, typing.Any]) -> dict[str, typing.Any]:
-        scenario_ids = {  # type: ignore
-            field.json_schema_extra["scenario_id"]: name
-            for name, field in class_.model_fields.items()
-            if isinstance(field.json_schema_extra, dict) and field.json_schema_extra.get("scenario_id")
-        }
-
-        for scenario in values["children"]:
-            if scenario["id"] not in scenario_ids:
-                continue
-
-            name = scenario_ids[scenario["id"]]
-            values[name] = scenario
-
-        return values
+        pass
 
     @pydantic.model_validator(mode="before")
     def __flatten_scenarios(cls, values: dict[str, typing.Any]) -> dict[str, typing.Any]:
         """Name certain scenarios."""
-        return cls._pre_flatten_scenarios(LineupScenario, values)
+        pass
 
     @property
     def all_children(self) -> typing.Sequence[LineupScenario]:
         """Get all children of this scenario."""
-        children = list(self.children)
-        for child in self.children:
-            children.extend(child.all_children)
-
-        return children
+        pass
 
 
 class LineupWorldScenarios(LineupScenario):
@@ -215,7 +162,7 @@ class LineupWorldScenarios(LineupScenario):
     @pydantic.model_validator(mode="before")
     def __flatten_scenarios(cls, values: dict[str, typing.Any]) -> dict[str, typing.Any]:
         """Name certain scenarios."""
-        return cls._pre_flatten_scenarios(LineupWorldScenarios, values)
+        pass
 
 
 class LineupAbyssScenarios(LineupScenario):
@@ -227,7 +174,7 @@ class LineupAbyssScenarios(LineupScenario):
     @pydantic.model_validator(mode="before")
     def __flatten_scenarios(cls, values: dict[str, typing.Any]) -> dict[str, typing.Any]:
         """Name certain scenarios."""
-        return cls._pre_flatten_scenarios(LineupAbyssScenarios, values)
+        pass
 
 
 class LineupScenarios(LineupScenario):
@@ -239,7 +186,7 @@ class LineupScenarios(LineupScenario):
     @pydantic.model_validator(mode="before")
     def __flatten_scenarios(cls, values: dict[str, typing.Any]) -> dict[str, typing.Any]:
         """Name certain scenarios."""
-        return cls._pre_flatten_scenarios(LineupScenarios, values)
+        pass
 
 
 class LineupCharacterPreview(PartialLineupCharacter):
@@ -252,10 +199,7 @@ class LineupCharacterPreview(PartialLineupCharacter):
 
     @pydantic.field_validator("role", mode="before")
     def __parse_role(cls, value: typing.Any) -> str:
-        if isinstance(value, str):
-            return value
-
-        return value["name"]
+        pass
 
 
 class LineupCharacter(LineupCharacterPreview):
@@ -292,10 +236,7 @@ class LineupPreview(APIModel, Unique):
 
     @pydantic.field_validator("characters", mode="before")
     def __parse_characters(cls, value: typing.Any) -> typing.Any:
-        if isinstance(value[0], typing.Sequence):
-            return value
-
-        return [list(group["group"]) for group in value]
+        pass
 
 
 class Lineup(LineupPreview):

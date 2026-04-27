@@ -27,14 +27,8 @@ class ActionTicket(pydantic.BaseModel):
     @pydantic.model_validator(mode="before")
     def __parse_data(cls, data: dict[str, typing.Any]) -> dict[str, typing.Any]:
         """Parse the data if it was provided in a raw format."""
-        verify_str = data["verify_str"]
-        if isinstance(verify_str, str):
-            data["verify_str"] = json.loads(verify_str)
-
-        return data
+        pass
 
     def to_rpc_verify_header(self) -> str:
         """Convert the action ticket to `x-rpc-verify` header."""
-        ticket = self.model_dump()
-        ticket["verify_str"] = json.dumps(ticket["verify_str"])
-        return json.dumps(ticket)
+        pass

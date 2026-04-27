@@ -130,7 +130,7 @@ class Event(APIModel):
 
     @pydantic.field_validator("description", mode="after")
     def __format_description(cls, v: str) -> str:
-        return v.replace("\\n", "\n")
+        pass
 
 
 class GenshinEventCalendar(APIModel):

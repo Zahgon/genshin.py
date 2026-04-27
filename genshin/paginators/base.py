@@ -15,16 +15,12 @@ T = typing.TypeVar("T")
 
 async def flatten(iterable: typing.AsyncIterable[T]) -> typing.Sequence[T]:
     """Flatten an async iterable."""
-    if isinstance(iterable, Paginator):
-        return await iterable.flatten()  # type: ignore
-
-    return [x async for x in iterable]
+    pass
 
 
 async def aiterate(iterable: typing.Iterable[T]) -> typing.AsyncIterator[T]:
     """Turn a plain iterable into an async iterator."""
-    for i in iterable:
-        yield i
+    pass
 
 
 class Paginator(typing.Generic[T], abc.ABC):
@@ -35,12 +31,7 @@ class Paginator(typing.Generic[T], abc.ABC):
     @property
     def _repr_attributes(self) -> typing.Sequence[str]:
         """Attributes to be used in repr."""
-        return [
-            attribute
-            for subclass in self.__class__.__mro__
-            for attribute in getattr(subclass, "__slots__", ())
-            if not attribute.startswith("_")
-        ]
+        pass
 
     def __repr__(self) -> str:
         kwargs = ", ".join(f"{name}={getattr(self, name, 'undefined')!r}" for name in self._repr_attributes)
@@ -71,10 +62,7 @@ class Paginator(typing.Generic[T], abc.ABC):
 
     async def next(self) -> T:
         """Return the next element."""
-        try:
-            return await self.__anext__()
-        except StopAsyncIteration:
-            raise LookupError("No elements were found") from None
+        pass
 
     def _complete(self) -> typing.NoReturn:
         """Mark paginator as complete and clear memory."""
@@ -85,7 +73,7 @@ class Paginator(typing.Generic[T], abc.ABC):
 
     async def flatten(self) -> typing.Sequence[T]:
         """Flatten the paginator."""
-        return [item async for item in self]
+        pass
 
     def __await__(self) -> typing.Generator[None, None, typing.Sequence[T]]:
         return self.flatten().__await__()
@@ -138,13 +126,10 @@ class BufferedPaginator(typing.Generic[T], Paginator[T], abc.ABC):
     @property
     def exhausted(self) -> bool:
         """Whether all pages have been fetched."""
-        return self._buffer is None
+        pass
 
     def _complete(self) -> typing.NoReturn:
-        self._buffer = None
-
-        super()._complete()
-        raise  # pyright bug
+        pass
 
     @abc.abstractmethod
     async def next_page(self) -> typing.Optional[typing.Iterable[T]]:
@@ -219,12 +204,7 @@ class MergedPaginator(typing.Generic[T], Paginator[T]):
 
     def _complete(self) -> typing.NoReturn:
         """Mark paginator as complete and clear memory."""
-        # free memory in heaps
-        self._heap = []
-        self.iterators = []
-
-        super()._complete()
-        raise  # pyright bug
+        pass
 
     def _create_heap_item(
         self,
@@ -233,28 +213,11 @@ class MergedPaginator(typing.Generic[T], Paginator[T]):
         order: typing.Optional[int] = None,
     ) -> tuple[typing.Any, int, T, typing.AsyncIterator[T]]:
         """Create a new item for the heap queue."""
-        sort_value = self._key(value) if self._key else value
-        if order is None:
-            order = random.getrandbits(16)
-
-        return (sort_value, order, value, iterator)
+        pass
 
     async def _prepare(self) -> None:
         """Prepare the heap queue by filling it with initial values."""
-        coros = (it.__anext__() for it in self.iterators)
-        first_values = await asyncio.gather(*coros, return_exceptions=True)
-
-        self._heap = []
-        for order, (it, value) in enumerate(zip(self.iterators, first_values)):
-            if isinstance(value, BaseException):
-                if isinstance(value, StopAsyncIteration):
-                    continue
-
-                raise value
-
-            heapq.heappush(self._heap, self._create_heap_item(value, iterator=it, order=order))
-
-        self._prepared = True
+        pass
 
     async def __anext__(self) -> T:
         if not self._prepared:
@@ -282,10 +245,4 @@ class MergedPaginator(typing.Generic[T], Paginator[T]):
 
     async def flatten(self, *, lazy: bool = False) -> typing.Sequence[T]:
         """Flatten the paginator."""
-        if self.limit is not None and lazy:
-            return [item async for item in self]
-
-        coros = (flatten(i) for i in self.iterators)
-        lists: typing.Sequence[typing.Sequence[T]] = await asyncio.gather(*coros)  # pyright: ignore
-
-        return list(heapq.merge(*lists, key=self._key))[: self.limit]  # pyright: ignore
+        pass

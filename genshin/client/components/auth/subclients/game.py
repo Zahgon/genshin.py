@@ -24,28 +24,7 @@ class GameAuthClient(base.BaseClient):
         self, action_type: str, api_name: str, *, username: typing.Optional[str] = None
     ) -> RiskyCheckResult:
         """Check if the given action (endpoint) is risky (whether captcha verification is required)."""
-        if self.default_game is None:
-            raise ValueError("No default game set.")
-
-        payload = {"action_type": action_type, "api_name": api_name}
-        if username:
-            payload["username"] = username
-
-        headers = auth_utility.RISKY_CHECK_HEADERS.copy()
-        headers["x-rpc-game_biz"] = constants.GAME_BIZS[self.region][self.default_game]
-        headers.update(self.custom_headers)
-
-        resp = await self.cookie_manager._raw_request(
-            "POST",
-            routes.GAME_RISKY_CHECK_URL.get_url(self.region),
-            json=payload,
-            headers=headers,
-        )
-
-        if not resp.data["data"]:
-            errors.raise_for_retcode(resp.data)
-
-        return RiskyCheckResult(**resp.data["data"])
+        pass
 
     @typing.overload
     async def _shield_login(  # noqa: D102 missing docstring in overload?
@@ -79,39 +58,7 @@ class GameAuthClient(base.BaseClient):
 
         Returns MMT if geetest verification is required.
         """
-        if self.default_game is None:
-            raise ValueError("No default game set.")
-
-        headers = auth_utility.SHIELD_LOGIN_HEADERS.copy()
-        headers["x-rpc-game_biz"] = constants.GAME_BIZS[self.region][self.default_game]
-        headers.update(self.custom_headers)
-
-        if mmt_result:
-            headers["x-rpc-risky"] = mmt_result.to_rpc_risky()
-        else:
-            # Check if geetest is required
-            check_result = await self._risky_check("login", "/shield/api/login", username=account)
-            if check_result.mmt:
-                return check_result.to_mmt()
-            else:
-                headers["x-rpc-risky"] = auth_utility.generate_risky_header(check_result.id)
-
-        payload = {
-            "account": account,
-            "password": password if encrypted else auth_utility.encrypt_credentials(password, 2),
-            "is_crypto": True,
-        }
-        resp = await self.cookie_manager._raw_request(
-            "POST",
-            routes.SHIELD_LOGIN_URL.get_url(self.region, self.default_game),
-            json=payload,
-            headers=headers,
-        )
-
-        if not resp.data["data"]:
-            errors.raise_for_retcode(resp.data)
-
-        return ShieldLoginResponse(**resp.data["data"])
+        pass
 
     @typing.overload
     async def _send_game_verification_email(  # noqa: D102 missing docstring in overload?
@@ -148,89 +95,12 @@ class GameAuthClient(base.BaseClient):
 
         Returns `None` if success, `RiskyCheckMMT` if geetest verification is required.
         """
-        if self.default_game is None:
-            raise ValueError("No default game set.")
-
-        headers = auth_utility.GRANT_TICKET_HEADERS.copy()
-        headers["x-rpc-game_biz"] = constants.GAME_BIZS[self.region][self.default_game]
-        headers.update(self.custom_headers)
-
-        if mmt_result:
-            headers["x-rpc-risky"] = mmt_result.to_rpc_risky()
-        else:
-            # Check if geetest is required
-            check_result = await self._risky_check("device_grant", "/device/api/preGrantByTicket")
-            if check_result.mmt:
-                return check_result.to_mmt()
-            else:
-                headers["x-rpc-risky"] = auth_utility.generate_risky_header(check_result.id)
-
-        payload = {
-            "way": "Way_Email",
-            "action_ticket": action_ticket,
-            "device": {
-                "device_model": device_model or "iPhone15,4",
-                "device_id": self.device_id or auth_utility.DEVICE_ID,
-                "client": client_type or 1,
-                "device_name": device_name or "iPhone",
-            },
-        }
-        resp = await self.cookie_manager._raw_request(
-            "POST",
-            routes.PRE_GRANT_TICKET_URL.get_url(self.region),
-            json=payload,
-            headers=headers,
-        )
-
-        if resp.data["retcode"] != 0:
-            errors.raise_for_retcode(resp.data)
-
-        return None
+        pass
 
     async def _verify_game_email(self, code: str, action_ticket: str) -> DeviceGrantResult:
         """Verify the email code."""
-        if self.default_game is None:
-            raise ValueError("No default game set.")
-
-        payload = {"code": code, "ticket": action_ticket}
-        headers = auth_utility.GRANT_TICKET_HEADERS.copy()
-        headers["x-rpc-game_biz"] = constants.GAME_BIZS[self.region][self.default_game]
-        headers.update(self.custom_headers)
-
-        resp = await self.cookie_manager._raw_request(
-            "POST",
-            routes.DEVICE_GRANT_URL.get_url(self.region),
-            json=payload,
-            headers=headers,
-        )
-
-        return DeviceGrantResult(**resp.data["data"])
+        pass
 
     async def _os_game_login(self, uid: str, game_token: str) -> GameLoginResult:
         """Log in to the game."""
-        if self.default_game is None:
-            raise ValueError("No default game set.")
-
-        payload = {
-            "channel_id": 1,
-            "device": self.device_id or auth_utility.DEVICE_ID,
-            "app_id": constants.APP_IDS[self.default_game][self.region],
-        }
-        payload["data"] = json.dumps({"uid": uid, "token": game_token, "guest": False})
-        payload["sign"] = auth_utility.generate_sign(payload, constants.APP_KEYS[self.default_game][self.region])
-
-        headers = auth_utility.GAME_LOGIN_HEADERS.copy()
-        headers["x-rpc-game_biz"] = constants.GAME_BIZS[self.region][self.default_game]
-        headers.update(self.custom_headers)
-
-        resp = await self.cookie_manager._raw_request(
-            "POST",
-            routes.GAME_LOGIN_URL.get_url(self.region, self.default_game),
-            json=payload,
-            headers=headers,
-        )
-
-        if not resp.data["data"]:
-            errors.raise_for_retcode(resp.data)
-
-        return GameLoginResult(**resp.data["data"])
+        pass

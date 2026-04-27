@@ -97,7 +97,7 @@ class AreaExploration(APIModel):
     @property
     def explored(self) -> float:
         """The percentage explored. (Note: This can go above 100%)"""
-        return self.raw_explored / 10
+        pass
 
 
 class NatlanTribe(APIModel):
@@ -142,16 +142,13 @@ class Exploration(APIModel):
     @property
     def explored(self) -> float:
         """The percentage explored."""
-        return self.raw_explored / 10
+        pass
 
     @pydantic.field_validator("offerings", mode="before")
     def __add_base_offering(
         cls, offerings: typing.Sequence[typing.Any], info: pydantic.ValidationInfo
     ) -> typing.Sequence[typing.Any]:
-        if info.data["type"] == "Reputation" and not any(info.data["type"] == o["name"] for o in offerings):
-            offerings = [*offerings, dict(name=info.data["type"], level=info.data["level"])]
-
-        return offerings
+        pass
 
 
 class TeapotRealm(APIModel):
@@ -162,8 +159,7 @@ class TeapotRealm(APIModel):
 
     @property
     def id(self) -> int:
-        match = re.search(r"\d", self.icon)
-        return int(match.group()) if match else 0
+        pass
 
 
 class Teapot(APIModel):
@@ -189,15 +185,11 @@ class PartialGenshinUserStats(APIModel):
 
     @pydantic.field_validator("teapot", mode="before")
     def __format_teapot(cls, v: typing.Any) -> typing.Optional[dict[str, typing.Any]]:
-        if not v:
-            return None
-        if isinstance(v, dict):
-            return typing.cast("dict[str, typing.Any]", v)
-        return {**v[0], "realms": v}
+        pass
 
     @pydantic.field_validator("characters", mode="before")
     def __format_characters(cls, v: typing.Sequence[typing.Any]) -> typing.Sequence[typing.Any]:
-        return [c for c in v if c["id"] != 0]
+        pass
 
 
 class GenshinUserStats(PartialGenshinUserStats):

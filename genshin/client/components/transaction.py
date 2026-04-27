@@ -26,21 +26,7 @@ class TransactionClient(base.BaseClient):
         **kwargs: typing.Any,
     ) -> typing.Mapping[str, typing.Any]:
         """Make a request towards the transaction log endpoint."""
-        params = dict(params or {})
-        authkey = authkey or self.authkey
-
-        if authkey is None:
-            raise RuntimeError("No authkey provided")
-
-        base_url = routes.YSULOG_URL.get_url(self.region)
-        url = base_url / endpoint
-
-        params["authkey_ver"] = 1
-        params["sign_type"] = 2
-        params["authkey"] = urllib.parse.unquote(authkey)
-        params["lang"] = utility.create_short_lang_code(lang or self.lang)
-
-        return await self.request(url, method=method, params=params, **kwargs)
+        pass
 
     async def _get_transaction_page(
         self,
@@ -51,23 +37,7 @@ class TransactionClient(base.BaseClient):
         authkey: typing.Optional[str] = None,
     ) -> typing.Sequence[models.BaseTransaction]:
         """Get a single page of transactions."""
-        kind = models.TransactionKind(kind)
-        endpoint = "Get" + kind.value.capitalize() + "Log"
-
-        data = await self.request_transaction(
-            endpoint,
-            lang=lang,
-            authkey=authkey,
-            params=dict(end_id=end_id, size=20),
-        )
-
-        transactions: list[models.BaseTransaction] = []
-        for trans in data["list"]:
-            model = models.ItemTransaction if "name" in trans else models.Transaction
-            model = typing.cast("type[models.BaseTransaction]", model)
-            transactions.append(model(**trans, kind=kind))
-
-        return transactions
+        pass
 
     def transaction_log(
         self,
@@ -79,27 +49,4 @@ class TransactionClient(base.BaseClient):
         end_id: int = 0,
     ) -> paginators.Paginator[models.BaseTransaction]:
         """Get the transaction log of a user."""
-        kinds = kind or ["primogem", "crystal", "resin", "artifact", "weapon"]
-
-        if isinstance(kinds, str):
-            kinds = [kinds]
-
-        iterators: list[paginators.Paginator[models.BaseTransaction]] = []
-        for kind in kinds:
-            iterators.append(
-                paginators.CursorPaginator(
-                    functools.partial(
-                        self._get_transaction_page,
-                        kind=kind,
-                        lang=lang,
-                        authkey=authkey,
-                    ),
-                    limit=limit,
-                    end_id=end_id,
-                )
-            )
-
-        if len(iterators) == 1:
-            return iterators[0]
-
-        return paginators.MergedPaginator(iterators, key=lambda trans: trans.time.timestamp())
+        pass

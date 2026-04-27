@@ -24,18 +24,7 @@ CallableT = typing.TypeVar("CallableT", bound="typing.Callable[..., typing.Await
 
 def _cache(func: CallableT) -> CallableT:
     """Cache a method."""
-
-    async def wrapper(self: CalculatorState, *args: typing.Any, **kwargs: typing.Any) -> typing.Any:
-        async with self.lock:
-            if value := self.cache.get(func.__name__):
-                return value
-
-            value = await func(self, *args, **kwargs)
-            self.cache[func.__name__] = value
-
-        return value
-
-    return typing.cast("CallableT", wrapper)
+    pass
 
 
 class CalculatorState:
@@ -55,16 +44,12 @@ class CalculatorState:
     @_cache
     async def get_character_details(self) -> models.CalculatorCharacterDetails:
         """Get character details."""
-        if self.character_id is None:
-            raise TypeError("No specified character.")
-
-        return await self.client.get_character_details(self.character_id)
+        pass
 
     @_cache
     async def get_artifact_ids(self, artifact_id: int) -> typing.Sequence[int]:
         """Get artifact ids."""
-        others = await self.client.get_complete_artifact_set(artifact_id)
-        return [artifact_id] + [other.id for other in others]
+        pass
 
 
 class CalculatorResolver(abc.ABC, typing.Generic[T]):
@@ -148,7 +133,7 @@ class ArtifactResolver(CalculatorResolver[typing.Sequence[typing.Mapping[str, ty
         self.data = []
 
     def add_artifact(self, id: int, current: int, target: int) -> None:
-        self.data.append(dict(id=id, level_current=current, level_target=target))
+        pass
 
     async def __call__(self, state: CalculatorState) -> typing.Sequence[typing.Mapping[str, typing.Any]]:
         return self.data
@@ -208,7 +193,7 @@ class TalentResolver(CalculatorResolver[typing.Sequence[typing.Mapping[str, typi
         self.data = []
 
     def add_talent(self, id: int, current: int, target: int) -> None:
-        self.data.append(dict(id=id, level_current=current, level_target=target))
+        pass
 
     async def __call__(self, state: CalculatorState) -> typing.Sequence[typing.Mapping[str, typing.Any]]:
         return self.data
@@ -291,40 +276,27 @@ class Calculator:
         element: typing.Optional[int] = None,
     ) -> Calculator:
         """Set the character."""
-        self.character = CharacterResolver(character, current, target, element=element)
-        self._state.character_id = self.character.id
-        return self
+        pass
 
     def set_weapon(self, id: int, current: int, target: int) -> Calculator:
         """Set the weapon."""
-        self.weapon = WeaponResolver(id, current, target)
-        return self
+        pass
 
     def add_artifact(self, id: int, current: int, target: int) -> Calculator:
         """Add an artifact."""
-        if type(self.artifacts) is not ArtifactResolver:
-            self.artifacts = ArtifactResolver()
-
-        self.artifacts.add_artifact(id, current, target)
-        return self
+        pass
 
     def set_artifact_set(self, any_artifact_id: int, current: int, target: int) -> Calculator:
         """Set an artifact set."""
-        self.artifacts = ArtifactSetResolver(any_artifact_id, current, target)
-        return self
+        pass
 
     def add_talent(self, group_id: int, current: int, target: int) -> Calculator:
         """Add a talent."""
-        if type(self.talents) is not TalentResolver:
-            self.talents = TalentResolver()
-
-        self.talents.add_talent(group_id, current, target)
-        return self
+        pass
 
     def with_current_weapon(self, target: int) -> Calculator:
         """Set the weapon of the selected character."""
-        self.weapon = CurrentWeaponResolver(target)
-        return self
+        pass
 
     def with_current_artifacts(
         self,
@@ -337,15 +309,7 @@ class Calculator:
         circlet: typing.Optional[int] = None,
     ) -> Calculator:
         """Add all artifacts of the selected character."""
-        self.artifacts = CurrentArtifactResolver(
-            target,
-            flower=flower,
-            feather=feather,
-            sands=sands,
-            goblet=goblet,
-            circlet=circlet,
-        )
-        return self
+        pass
 
     def with_current_talents(
         self,
@@ -357,36 +321,15 @@ class Calculator:
         burst: typing.Optional[int] = None,
     ) -> Calculator:
         """Add all talents of the currently selected character."""
-        self.talents = CurrentTalentResolver(
-            target=target,
-            current=current,
-            attack=attack,
-            skill=skill,
-            burst=burst,
-        )
-        return self
+        pass
 
     async def build(self) -> typing.Mapping[str, typing.Any]:
         """Build the calculator object."""
-        data: dict[str, typing.Any] = {}
-
-        if self.character:
-            data.update(await self.character(self._state))
-
-        if self.weapon:
-            data["weapon"] = await self.weapon(self._state)
-
-        if self.artifacts:
-            data["reliquary_list"] = await self.artifacts(self._state)
-
-        if self.talents:
-            data["skill_list"] = await self.talents(self._state)
-
-        return data
+        pass
 
     async def calculate(self) -> models.CalculatorResult:
         """Execute the calculator."""
-        return await self.client._execute_calculator(await self.build(), lang=self.lang)
+        pass
 
     def __await__(self) -> typing.Generator[typing.Any, None, models.CalculatorResult]:
         return self.calculate().__await__()
@@ -408,16 +351,15 @@ class BatchCalculator:
 
     def add_character(self, builder: Calculator) -> BatchCalculator:
         """Add a character."""
-        self.characters.append(builder)
-        return self
+        pass
 
     async def build(self) -> typing.Sequence[typing.Mapping[str, typing.Any]]:
         """Build the calculator object."""
-        return [await character.build() for character in self.characters]
+        pass
 
     async def calculate(self) -> models.CalculatorBatchResult:
         """Execute the calculator."""
-        return await self.client._execute_batch_calculator(await self.build(), lang=self.lang)
+        pass
 
     def __await__(self) -> typing.Generator[typing.Any, None, models.CalculatorBatchResult]:
         return self.calculate().__await__()
@@ -443,31 +385,19 @@ class FurnishingCalculator:
 
     def add_furnishing(self, id: types.IDOr[models.CalculatorFurnishing], amount: int = 1) -> FurnishingCalculator:
         """Add a furnishing."""
-        self.furnishings.setdefault(int(id), 0)
-        self.furnishings[int(id)] += amount
-        return self
+        pass
 
     def with_replica(self, code: int, *, region: typing.Optional[str] = None) -> FurnishingCalculator:
         """Set the replica code."""
-        self.replica_code = code
-        self.replica_region = region
-        return self
+        pass
 
     async def build(self) -> typing.Mapping[str, typing.Any]:
         """Build the calculator object."""
-        data: dict[str, typing.Any] = {}
-
-        if self.replica_code:
-            furnishings = await self.client.get_teapot_replica_blueprint(self.replica_code, region=self.replica_region)
-            self.furnishings.update({furnishing.id: furnishing.amount or 1 for furnishing in furnishings})
-
-        data["list"] = [{"id": id, "cnt": amount} for id, amount in self.furnishings.items()]
-
-        return data
+        pass
 
     async def calculate(self) -> models.CalculatorFurnishingResults:
         """Execute the calculator."""
-        return await self.client._execute_furnishings_calculator(await self.build(), lang=self.lang)
+        pass
 
     def __await__(self) -> typing.Generator[typing.Any, None, models.CalculatorFurnishingResults]:
         return self.calculate().__await__()

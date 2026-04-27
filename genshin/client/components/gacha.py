@@ -41,24 +41,7 @@ class WishClient(base.BaseClient):
         **kwargs: typing.Any,
     ) -> typing.Mapping[str, typing.Any]:
         """Make a request towards the gacha info endpoint."""
-        params = dict(params or {})
-        game = game or self.default_game
-        if game is None:
-            raise RuntimeError("No game provided")
-
-        authkey = authkey or self.authkeys.get(game)
-        if authkey is None:
-            raise RuntimeError("No authkey provided")
-
-        base_url = routes.GACHA_URL.get_url(self.region, game)
-        url = base_url / endpoint
-
-        params["authkey_ver"] = 1
-        params["authkey"] = urllib.parse.unquote(authkey)
-        params["lang"] = utility.create_short_lang_code(lang or self.lang) if short_lang_code else lang or self.lang
-        params["game_biz"] = utility.get_prod_game_biz(self.region, game)
-
-        return await self.request(url, params=params, **kwargs)
+        pass
 
     async def _get_gacha_page(
         self,
@@ -70,41 +53,7 @@ class WishClient(base.BaseClient):
         authkey: typing.Optional[str] = None,
     ) -> tuple[typing.Sequence[typing.Any], int]:
         """Get a single page of wishes."""
-        if banner_type in FATE_BANNER_TYPES:
-            endpoint = "getLdGachaLog"
-        elif banner_type in MW_BANNER_TYPES:
-            endpoint = "getBeyondGachaLog"
-        else:
-            endpoint = "getGachaLog"
-
-        data = await self.request_gacha_info(
-            endpoint,
-            lang=lang,
-            game=game,
-            authkey=authkey,
-            params=dict(gacha_type=banner_type, real_gacha_type=banner_type, size=20, end_id=end_id),
-            short_lang_code=banner_type not in MW_BANNER_TYPES,
-        )
-
-        if game is types.Game.GENSHIN:
-            # Genshin doesn't return timezone data
-            # America: UTC-5, Europe: UTC+1, others are UTC+8
-            tz_offsets = {"os_usa": -13, "os_euro": -7}
-
-            try:
-                if isinstance(banner_type, models.MWBannerType):
-                    # MW has region inside the wish item
-                    tz_offset = tz_offsets.get(data["list"][0]["region"], 0)
-                else:
-                    tz_offset = tz_offsets.get(data["region"], 0)
-            except (KeyError, IndexError):
-                tz_offset = 0
-        else:
-            tz_offset = data["region_time_zone"]
-            if game is types.Game.STARRAIL:
-                tz_offset -= 8  # Star rail returns UTC+n for this value
-
-        return data["list"], tz_offset
+        pass
 
     async def _get_wish_page(
         self,
@@ -115,14 +64,7 @@ class WishClient(base.BaseClient):
         authkey: typing.Optional[str] = None,
     ) -> typing.Sequence[models.Wish]:
         """Get a single page of wishes."""
-        data, tz_offset = await self._get_gacha_page(
-            end_id=end_id,
-            banner_type=banner_type,
-            lang=lang,
-            authkey=authkey,
-            game=types.Game.GENSHIN,
-        )
-        return [models.Wish(**i, banner_type=banner_type, tz_offset=tz_offset) for i in data]
+        pass
 
     async def _get_mw_wish_page(
         self,
@@ -133,21 +75,7 @@ class WishClient(base.BaseClient):
         authkey: typing.Optional[str] = None,
     ) -> typing.Sequence[models.MWWish]:
         """Get a single page of Miliastra Wonderland wishes."""
-        data, tz_offset = await self._get_gacha_page(
-            end_id=end_id,
-            banner_type=banner_type,
-            lang=lang,
-            authkey=authkey,
-            game=types.Game.GENSHIN,
-        )
-        wishes: list[models.MWWish] = []
-        for i in data:
-            try:
-                wishes.append(models.MWWish(**i, banner_type=banner_type, tz_offset=tz_offset))
-            except ValidationError as e:
-                LOGGER_.warning(f"Failed to parse wish with id {i.get('id', 'unknown')}: {e}")
-                continue
-        return wishes
+        pass
 
     async def _get_warp_page(
         self,
@@ -158,15 +86,7 @@ class WishClient(base.BaseClient):
         authkey: typing.Optional[str] = None,
     ) -> typing.Sequence[models.Warp]:
         """Get a single page of warps."""
-        data, tz_offset = await self._get_gacha_page(
-            end_id=end_id,
-            banner_type=banner_type,
-            lang=lang,
-            authkey=authkey,
-            game=types.Game.STARRAIL,
-        )
-
-        return [models.Warp(**i, banner_type=banner_type, tz_offset=tz_offset) for i in data]
+        pass
 
     async def _get_signal_page(
         self,
@@ -177,15 +97,7 @@ class WishClient(base.BaseClient):
         authkey: typing.Optional[str] = None,
     ) -> typing.Sequence[models.SignalSearch]:
         """Get a single page of signal searches."""
-        data, tz_offset = await self._get_gacha_page(
-            end_id=end_id,
-            banner_type=banner_type,
-            lang=lang,
-            authkey=authkey,
-            game=types.Game.ZZZ,
-        )
-
-        return [models.SignalSearch(**i, banner_type=banner_type, tz_offset=tz_offset) for i in data]
+        pass
 
     def wish_history(
         self,
@@ -197,30 +109,7 @@ class WishClient(base.BaseClient):
         end_id: int = 0,
     ) -> paginators.Paginator[models.Wish]:
         """Get the wish history of a user."""
-        banner_types = banner_type or list(models.GenshinBannerType)
-
-        if not isinstance(banner_types, typing.Sequence):
-            banner_types = [banner_types]
-
-        iterators: list[paginators.Paginator[models.Wish]] = []
-        for banner in banner_types:
-            iterators.append(
-                paginators.CursorPaginator(
-                    functools.partial(
-                        self._get_wish_page,
-                        banner_type=typing.cast(models.GenshinBannerType, banner),
-                        lang=lang,
-                        authkey=authkey,
-                    ),
-                    limit=limit,
-                    end_id=end_id,
-                )
-            )
-
-        if len(iterators) == 1:
-            return iterators[0]
-
-        return paginators.MergedPaginator(iterators, key=lambda wish: wish.time.timestamp())
+        pass
 
     def mw_wish_history(
         self,
@@ -232,31 +121,7 @@ class WishClient(base.BaseClient):
         end_id: int = 0,
     ) -> paginators.Paginator[models.MWWish]:
         """Get the Miliastra Wonderland wish history of a user."""
-        banner_types = banner_type or (models.MWBannerType.STANDARD, models.MWBannerType.EVENT)
-
-        if not isinstance(banner_types, typing.Sequence):
-            banner_types = [banner_types]
-
-        iterators: list[paginators.Paginator[models.MWWish]] = []
-        for banner in banner_types:
-            iterators.append(
-                paginators.CursorPaginator(
-                    functools.partial(
-                        self._get_mw_wish_page,
-                        banner_type=typing.cast(models.MWBannerType, banner),
-                        lang=lang,
-                        authkey=authkey,
-                    ),
-                    limit=limit,
-                    end_id=end_id,
-                    page_size=5,
-                )
-            )
-
-        if len(iterators) == 1:
-            return iterators[0]
-
-        return paginators.MergedPaginator(iterators, key=lambda wish: wish.time.timestamp())
+        pass
 
     def warp_history(
         self,
@@ -268,30 +133,7 @@ class WishClient(base.BaseClient):
         end_id: int = 0,
     ) -> paginators.Paginator[models.Warp]:
         """Get the warp history of a user."""
-        banner_types = banner_type or list(models.StarRailBannerType)
-
-        if not isinstance(banner_types, typing.Sequence):
-            banner_types = [banner_types]
-
-        iterators: list[paginators.Paginator[models.Warp]] = []
-        for banner in banner_types:
-            iterators.append(
-                paginators.CursorPaginator(
-                    functools.partial(
-                        self._get_warp_page,
-                        banner_type=typing.cast(models.StarRailBannerType, banner),
-                        lang=lang,
-                        authkey=authkey,
-                    ),
-                    limit=limit,
-                    end_id=end_id,
-                )
-            )
-
-        if len(iterators) == 1:
-            return iterators[0]
-
-        return paginators.MergedPaginator(iterators, key=lambda wish: wish.time.timestamp())
+        pass
 
     def signal_history(
         self,
@@ -303,30 +145,7 @@ class WishClient(base.BaseClient):
         end_id: int = 0,
     ) -> paginators.Paginator[models.SignalSearch]:
         """Get the signal search history of a user."""
-        banner_types = banner_type or list(models.ZZZBannerType)
-
-        if not isinstance(banner_types, typing.Sequence):
-            banner_types = [banner_types]
-
-        iterators: list[paginators.Paginator[models.SignalSearch]] = []
-        for banner in banner_types:
-            iterators.append(
-                paginators.CursorPaginator(
-                    functools.partial(
-                        self._get_signal_page,
-                        banner_type=typing.cast(models.ZZZBannerType, banner),
-                        lang=lang,
-                        authkey=authkey,
-                    ),
-                    limit=limit,
-                    end_id=end_id,
-                )
-            )
-
-        if len(iterators) == 1:
-            return iterators[0]
-
-        return paginators.MergedPaginator(iterators, key=lambda wish: wish.time.timestamp())
+        pass
 
     @deprecation.deprecated("get_genshin_banner_names")
     async def get_banner_names(
@@ -336,7 +155,7 @@ class WishClient(base.BaseClient):
         authkey: typing.Optional[str] = None,
     ) -> typing.Mapping[int, str]:
         """Get a list of banner names."""
-        return await self.get_genshin_banner_names(lang=lang, authkey=authkey)
+        pass
 
     async def get_genshin_banner_names(
         self,
@@ -345,14 +164,7 @@ class WishClient(base.BaseClient):
         authkey: typing.Optional[str] = None,
     ) -> typing.Mapping[int, str]:
         """Get a list of banner names."""
-        data = await self.request_gacha_info(
-            "getConfigList",
-            lang=lang,
-            game=types.Game.GENSHIN,
-            authkey=authkey,
-            static_cache=client_cache.cache_key("banner", endpoint="names", lang=lang or self.lang),
-        )
-        return {int(i["key"]): i["name"] for i in data["gacha_type_list"]}
+        pass
 
     async def _get_banner_details(
         self,
@@ -362,21 +174,7 @@ class WishClient(base.BaseClient):
         lang: typing.Optional[str] = None,
     ) -> models.BannerDetails:
         """Get details of a specific banner using its id."""
-        lang = lang or self.lang
-        game = game or self.default_game
-        if game is None:
-            raise RuntimeError("No game provided")
-        if game == types.Game.STARRAIL:
-            warnings.warn("Banner details for Star Rail are not fully supported.")
-
-        region = "hkrpg" if game == types.Game.STARRAIL else "hk4e"
-        server = "prod_official_asia" if game == types.Game.STARRAIL else "os_asia"
-
-        data = await self.request_webstatic(
-            f"/gacha_info/{region}/{server}/{banner_id}/{lang}.json",
-            cache=client_cache.cache_key("banner", endpoint="details", banner=banner_id, lang=lang),
-        )
-        return models.BannerDetails(**data, banner_id=banner_id)
+        pass
 
     @deprecation.deprecated("get_genshin_banner_ids")
     async def get_banner_ids(self) -> typing.Sequence[str]:
@@ -384,26 +182,14 @@ class WishClient(base.BaseClient):
 
         Uses the current cn banners.
         """
-        return await self.get_genshin_banner_ids()
+        pass
 
     async def get_genshin_banner_ids(self) -> typing.Sequence[str]:
         """Get a list of banner ids.
 
         Uses the current cn banners.
         """
-
-        def process_gacha(data: typing.Mapping[str, typing.Any]) -> str:
-            # Temporary fix for 4.5 chronicled wish
-            if data["gacha_type"] == 500:
-                return "8b10b48c52dd6870f92d72e9963b44bb8968ed2f"
-            return data["gacha_id"]
-
-        data = await self.request_webstatic(
-            "gacha_info/hk4e/cn_gf01/gacha/list.json",
-            region=types.Region.CHINESE,
-            cache=client_cache.cache_key("banner", endpoint="ids"),
-        )
-        return list(map(process_gacha, data["data"]["list"]))
+        pass
 
     async def get_banner_details(
         self,
@@ -413,15 +199,7 @@ class WishClient(base.BaseClient):
         lang: typing.Optional[str] = None,
     ) -> typing.Sequence[models.BannerDetails]:
         """Get all banner details at once in a batch."""
-        game = game or self.default_game
-        if game == types.Game.STARRAIL and not banner_ids:
-            raise RuntimeError("No banner ids provided for star rail")
-
-        banner_ids = banner_ids or await self.get_genshin_banner_ids()
-
-        coros = (self._get_banner_details(i, lang=lang, game=game) for i in banner_ids)
-        data = await asyncio.gather(*coros)
-        return list(data)
+        pass
 
     @deprecation.deprecated("get_genshin_gacha_items")
     async def get_gacha_items(
@@ -431,7 +209,7 @@ class WishClient(base.BaseClient):
         lang: typing.Optional[str] = None,
     ) -> typing.Sequence[models.GachaItem]:
         """Get the list of characters and weapons that can be gotten from the gacha."""
-        return await self.get_genshin_gacha_items(server=server, lang=lang)
+        pass
 
     async def get_genshin_gacha_items(
         self,
@@ -440,10 +218,4 @@ class WishClient(base.BaseClient):
         lang: typing.Optional[str] = None,
     ) -> typing.Sequence[models.GachaItem]:
         """Get the list of characters and weapons that can be gotten from the gacha."""
-        raise RuntimeError("This method is currently broken, if you know how to fix it, please open an issue.")
-        lang = lang or self.lang
-        data = await self.request_webstatic(
-            f"/hk4e/gacha_info/{server}/items/{lang}.json",
-            cache=client_cache.cache_key("banner", endpoint="items", lang=lang),
-        )
-        return [models.GachaItem(**i) for i in data]
+        pass

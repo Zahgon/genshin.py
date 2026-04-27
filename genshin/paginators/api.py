@@ -76,21 +76,7 @@ class PagedPaginator(typing.Generic[T], APIPaginator[T]):
 
     async def next_page(self) -> typing.Optional[typing.Iterable[T]]:
         """Get the next page of the paginator."""
-        if self.current_page is None:
-            return None
-
-        data = await self.getter(self.current_page)
-
-        if self._page_size is None:
-            warnings.warn("No page size specified for resource, having to guess.")
-            self._page_size = len(data)
-
-        if len(data) < self._page_size:
-            self.current_page = None
-            return data
-
-        self.current_page += 1
-        return data
+        pass
 
 
 class TokenPaginator(typing.Generic[T], APIPaginator[T]):
@@ -121,20 +107,7 @@ class TokenPaginator(typing.Generic[T], APIPaginator[T]):
 
     async def next_page(self) -> typing.Optional[typing.Iterable[T]]:
         """Get the next page of the paginator."""
-        if self.token is None:
-            return None
-
-        self.token, data = await self.getter(self.token)
-
-        if self._page_size is None:
-            warnings.warn("No page size specified for resource, having to guess.")
-            self._page_size = len(data)
-
-        if len(data) < self._page_size:
-            self.token = None
-            return data
-
-        return data
+        pass
 
 
 class CursorPaginator(typing.Generic[UniqueT], APIPaginator[UniqueT]):
@@ -167,18 +140,4 @@ class CursorPaginator(typing.Generic[UniqueT], APIPaginator[UniqueT]):
 
     async def next_page(self) -> typing.Optional[typing.Iterable[UniqueT]]:
         """Get the next page of the paginator."""
-        if self.end_id is None:
-            return None
-
-        data = await self.getter(self.end_id)
-
-        if self._page_size is None:
-            warnings.warn("No page size specified for resource, having to guess.")
-            self._page_size = len(data)
-
-        if len(data) < self._page_size:
-            self.end_id = None
-            return data
-
-        self.end_id = data[-1].id
-        return data
+        pass

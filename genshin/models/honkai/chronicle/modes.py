@@ -77,7 +77,7 @@ class Boss(APIModel, Unique):
         # I noticed that sometimes the urls are returned incorrectly, which appears to be
         # a problem on the hoyolab website too, so I expect this to be fixed sometime.
         # For now, this hotfix seems to work.
-        return re.sub(r"/boss_\d+\.", lambda m: str.upper(m[0]), url, flags=re.IGNORECASE)
+        pass
 
 
 class ELF(APIModel, Unique):
@@ -91,11 +91,7 @@ class ELF(APIModel, Unique):
 
     @pydantic.field_validator("rarity", mode="before")
     def __fix_rank(cls, rarity: typing.Union[int, str]) -> str:
-        if isinstance(rarity, str):
-            return rarity
-
-        # ELFs come in rarities A and S, API returns 4 and 5, respectively
-        return ["A", "S"][rarity - 4]
+        pass
 
 
 # ABYSS
@@ -103,11 +99,7 @@ class ELF(APIModel, Unique):
 
 def get_abyss_rank_mi18n(rank: int, tier: int) -> str:
     """Turn the rank returned by the API into the respective rank name displayed in-game."""
-    if tier == 4:
-        mod = ("1", "2_1", "2_2", "2_3", "3_1", "3_2", "3_3", "4", "5")[rank - 1]
-    else:
-        mod = str(rank)
-    return f"bbs/level{mod}"
+    pass
 
 
 class BaseAbyss(APIModel):
@@ -142,10 +134,7 @@ class OldAbyss(BaseAbyss):
         # while newAbyssReport returns them as 1/2/3/4(/5) respectively.
         # Having them as ints at base seems more useful than strs.
         # (in-game, they use the same names (Sinful, Agony, etc.))
-        if isinstance(rank, int):
-            return rank
-
-        return 69 - ord(rank)
+        pass
 
 
 class SuperstringAbyss(BaseAbyss):
@@ -163,7 +152,7 @@ class SuperstringAbyss(BaseAbyss):
 
     @property
     def start_trophies(self) -> int:
-        return self.end_trophies - self.trophies_gained
+        pass
 
 
 # MEMORIAL ARENA
@@ -171,8 +160,7 @@ class SuperstringAbyss(BaseAbyss):
 
 def prettify_MA_rank(rank: int) -> str:  # Independent of mi18n
     """Turn the rank returned by the API into the respective rank name displayed in-game."""
-    brackets = (0, 0.20, 2, 7, 17, 35, 65, 100)
-    return f"{brackets[rank - 1]:1.2f} ~ {brackets[rank]:1.2f}"
+    pass
 
 
 class MemorialBattle(APIModel):
@@ -197,7 +185,7 @@ class MemorialArena(APIModel):
     @property
     def rank(self) -> str:
         """The user's Memorial Arena rank as displayed in-game."""
-        return prettify_MA_rank(self.raw_rank)
+        pass
 
 
 # ELYSIAN REALMS
@@ -222,28 +210,10 @@ class Signet(APIModel):
 
     @property
     def name(self) -> str:
-        return [
-            "Deliverance",
-            "Gold",
-            "Decimation",
-            "Bodhi",
-            "Setsuna",
-            "Infinity",
-            "Vicissitude",
-            "Ego",
-            "Unknown",      # Unused, no signet with id 9.
-            "Discipline",   # icon 12
-            "Helix",        # icon 13
-            "Daybreak",     # icon 9
-            "Stars",        # icon 10
-            "Reverie",      # icon 11
-        ][self.id - 1]  # fmt: skip
+        pass
 
     def get_scaled_icon(self, scale: typing.Literal[1, 2, 3] = 2) -> str:
-        if not 1 <= scale <= 3:
-            raise ValueError("Scale must lie between 1 and 3.")
-
-        return self.icon.replace("@2x", "" if scale == 1 else f"@{scale}x")
+        pass
 
 
 class RemembranceSigil(APIModel):
@@ -253,18 +223,15 @@ class RemembranceSigil(APIModel):
 
     @property
     def id(self) -> int:
-        match = re.match(r".*/(\d+).png", self.icon)
-        return int(match[1]) if match else 0
+        pass
 
     @property
     def name(self) -> str:
-        sigil = REMEMBRANCE_SIGILS.get(self.id)
-        return sigil[0] if sigil else "Unknown"
+        pass
 
     @property
     def rarity(self) -> int:
-        sigil = REMEMBRANCE_SIGILS.get(self.id)
-        return sigil[1] if sigil else 1
+        pass
 
 
 class ElysianRealm(APIModel):
@@ -283,11 +250,8 @@ class ElysianRealm(APIModel):
 
     @pydantic.field_validator("remembrance_sigil", mode="before")
     def __extend_sigil(cls, sigil: typing.Any) -> typing.Any:
-        if isinstance(sigil, str):
-            return dict(icon=sigil)
-
-        return sigil
+        pass
 
     @property
     def lineup(self) -> typing.Sequence[battlesuit.Battlesuit]:
-        return [self.leader, *self.supports]
+        pass

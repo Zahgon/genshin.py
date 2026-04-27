@@ -59,7 +59,7 @@ class Route(BaseRoute):
 
     def get_url(self) -> yarl.URL:
         """Attempt to get a URL."""
-        return self.url
+        pass
 
 
 class InternationalRoute(BaseRoute):
@@ -75,10 +75,7 @@ class InternationalRoute(BaseRoute):
 
     def get_url(self, region: types.Region) -> yarl.URL:
         """Attempt to get a URL."""
-        if not self.urls[region]:
-            raise RuntimeError(f"URL does not support {region.name} region.")
-
-        return self.urls[region]
+        pass
 
 
 class GameRoute(BaseRoute):
@@ -98,13 +95,7 @@ class GameRoute(BaseRoute):
 
     def get_url(self, region: types.Region, game: types.Game) -> yarl.URL:
         """Attempt to get a URL."""
-        if not self.urls[region]:
-            raise RuntimeError(f"URL does not support {region.name} region.")
-
-        if not self.urls[region].get(game):
-            raise RuntimeError(f"URL does not support {game.name} game for {region.name} region.")
-
-        return self.urls[region][game]
+        pass
 
 
 WEBSTATIC_URL = InternationalRoute(

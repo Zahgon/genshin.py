@@ -116,15 +116,7 @@ class ZZZBannerType(enum.IntEnum):
 
     def to_chronicle_type(self) -> str:
         """Get the chronicle type string for this banner type."""
-        mapping = {
-            ZZZBannerType.STANDARD: "GACHA_TYPE_PERMANENT",
-            ZZZBannerType.CHARACTER: "GACHA_TYPE_CHARACTER_UP",
-            ZZZBannerType.WEAPON: "GACHA_TYPE_WEAPON_UP",
-            ZZZBannerType.BANGBOO: "GACHA_TYPE_BANGBOO",
-            ZZZBannerType.EXCLUSIVE_RESCREENING: "GACHA_TYPE_CHARACTER_RETURN",
-            ZZZBannerType.REVERBERATION: "GACHA_TYPE_WEAPON_RETURN",
-        }
-        return mapping[self]
+        pass
 
 
 class BaseWish(APIModel, Unique):
@@ -142,13 +134,11 @@ class BaseWish(APIModel, Unique):
 
     @pydantic.field_validator("rarity", mode="before")
     def __cast_rarity(cls, v: typing.Any) -> int:
-        return int(v)
+        pass
 
     @pydantic.field_validator("time", mode="before")
     def __parse_time(cls, v: str, info: pydantic.ValidationInfo) -> datetime.datetime:
-        return datetime.datetime.fromisoformat(v).replace(
-            tzinfo=datetime.timezone(datetime.timedelta(hours=8 + info.data["tz_offset"]))
-        )
+        pass
 
 
 class Wish(BaseWish):
@@ -159,7 +149,7 @@ class Wish(BaseWish):
 
     @pydantic.field_validator("banner_type", mode="before")
     def __cast_banner_type(cls, v: typing.Any) -> int:
-        return int(v)
+        pass
 
 
 class MWWish(BaseWish):
@@ -185,7 +175,7 @@ class Warp(BaseWish):
 
     @pydantic.field_validator("banner_type", mode="before")
     def __cast_banner_type(cls, v: typing.Any) -> int:
-        return int(v)
+        pass
 
 
 class SignalSearch(BaseWish):
@@ -198,35 +188,14 @@ class SignalSearch(BaseWish):
 
     @pydantic.field_validator("banner_type", mode="before")
     def __cast_banner_type(cls, v: typing.Any) -> int:
-        return int(v)
+        pass
 
     @classmethod
     def from_chronicle_data(
         cls, data: typing.Mapping[str, typing.Any], uid: int, tz_offset: int, banner_type: ZZZBannerType
     ) -> "SignalSearch":
         """Create a ZZZChronicleWish from chronicle data."""
-        rarity_convert = {"S": 4, "A": 3, "B": 2}
-        wish_time = data["date"]
-        wish_dt = datetime.datetime(
-            year=wish_time["year"],
-            month=wish_time["month"],
-            day=wish_time["day"],
-            hour=wish_time["hour"],
-            minute=wish_time["minute"],
-            second=wish_time["second"],
-        )
-        converted_data = {
-            "uid": uid,
-            "id": int(data["id"]),
-            "name": data["item_name"],
-            "rank_type": rarity_convert[data["rarity"]],
-            "tz_offset": tz_offset,
-            "time": wish_dt.isoformat(),
-            "item_id": int(data["item_id"]),
-            "item_type": data["item_type"],
-            "banner_type": banner_type,
-        }
-        return cls.model_validate(converted_data)
+        pass
 
 
 class BannerDetailItem(APIModel):
@@ -250,16 +219,7 @@ class BannerDetailsUpItem(APIModel):
 
     @pydantic.field_validator("element", mode="before")
     def __parse_element(cls, v: str) -> str:
-        return {
-            "风": "Anemo",
-            "火": "Pyro",
-            "水": "Hydro",
-            "雷": "Electro",
-            "冰": "Cryo",
-            "岩": "Geo",
-            "草": "Dendro",
-            "": "",
-        }.get(v, v)
+        pass
 
 
 class BannerDetails(APIModel):
@@ -289,7 +249,7 @@ class BannerDetails(APIModel):
 
     @pydantic.field_validator("r5_up_items", "r4_up_items", mode="before")
     def __replace_none(cls, v: typing.Optional[typing.Sequence[typing.Any]]) -> typing.Sequence[typing.Any]:
-        return v or []
+        pass
 
     @pydantic.field_validator(
         "r5_up_prob",
@@ -303,30 +263,19 @@ class BannerDetails(APIModel):
         mode="before",
     )
     def __parse_percentage(cls, v: typing.Optional[str]) -> typing.Optional[float]:
-        if v is None or isinstance(v, (int, float)):
-            return v
-
-        return None if v == "0%" else float(v[:-1].replace(",", "."))
+        pass
 
     @property
     def name(self) -> str:
-        return re.sub(r"<.*?>", "", self.title).strip()
+        pass
 
     @property
     def banner_type_name(self) -> str:
-        banners = {
-            100: "Novice Wishes",
-            200: "Permanent Wish",
-            301: "Character Event Wish",
-            302: "Weapon Event Wish",
-            400: "Character Event Wish",
-        }
-        return banners[self.banner_type]
+        pass
 
     @property
     def items(self) -> typing.Sequence[BannerDetailItem]:
-        items = self.r5_items + self.r4_items + self.r3_items
-        return sorted(items, key=lambda x: x.order)
+        pass
 
 
 class GachaItem(APIModel, Unique):
@@ -339,8 +288,8 @@ class GachaItem(APIModel, Unique):
 
     @pydantic.field_validator("id")
     def __format_id(cls, v: int) -> int:
-        return 10000000 + v - 1000 if len(str(v)) == 4 else v
+        pass
 
     def is_character(self) -> bool:
         """Whether this item is a character."""
-        return len(str(self.id)) == 8
+        pass

@@ -64,116 +64,44 @@ ZZZ_SERVER_RANGE: typing.Mapping[str, typing.Sequence[str]] = {
 
 def create_short_lang_code(lang: str) -> str:
     """Create an alternative short lang code."""
-    return lang if "zh" in lang else lang.split("-")[0]
+    pass
 
 
 def recognize_genshin_server(uid: int) -> str:
     """Recognize which server a Genshin UID is from."""
-    for server_name, digits in GENSHIN_SERVER_RANGE.items():
-        if str(uid)[:-8] in digits:
-            return server_name
-
-    raise ValueError(f"UID {uid} isn't associated with any server")
+    pass
 
 
 def get_prod_game_biz(region: types.Region, game: types.Game) -> str:
     """Get the game_biz value corresponding to a game and region."""
-    game_biz = ""
-    if game is types.Game.HONKAI:
-        game_biz = "bh3_"
-    elif game is types.Game.GENSHIN:
-        game_biz = "hk4e_"
-    elif game is types.Game.STARRAIL:
-        game_biz = "hkrpg_"
-    elif game is types.Game.ZZZ:
-        game_biz = "nap_"
-    elif game is types.Game.TOT:
-        game_biz = "nxx_"
-
-    if region is types.Region.OVERSEAS:
-        game_biz += "global"
-    elif region is types.Region.CHINESE:
-        game_biz += "cn"
-
-    return game_biz
+    pass
 
 
 def recognize_honkai_server(uid: int) -> str:
     """Recognizes which server a Honkai UID is from."""
-    warnings.warn("recognize_honkai_server is unreliable, avoid using it.")
-    if 10000000 < uid < 100000000:
-        return "overseas01"
-    elif 100000000 < uid < 200000000:
-        return "usa01"
-    elif 200000000 < uid < 300000000:
-        return "eur01"
-
-    # From what I can tell, CN UIDs are all over the place,
-    # seemingly even overlapping with overseas UIDs...
-    # Probably gonna need some input from actual CN players here, but I know none.
-    # It could be that e.g. global range is 2e8 ~ 2.5e8
-    raise ValueError(f"UID {uid} isn't associated with any server")
+    pass
 
 
 def recognize_starrail_server(uid: int) -> str:
     """Recognize which server a Star Rail UID is from."""
-    for server, digits in STARRAIL_SERVER_RANGE.items():
-        if str(uid)[:-8] in digits:
-            return server
-
-    raise ValueError(f"UID {uid} isn't associated with any server")
+    pass
 
 
 def recognize_zzz_server(uid: int) -> str:
     """Recognize which server a Zenless Zone Zero UID is from."""
-    # CN region UIDs only has 8 digits, global has 10, so we use this method to recognize the server
-    # This might change in the future when UIDs run out but... let's keep it like this for now
-    if len(str(uid)) == 8:
-        return "prod_gf_cn"
-
-    for server, digits in ZZZ_SERVER_RANGE.items():
-        if str(uid)[:-8] in digits:
-            return server
-
-    raise ValueError(f"UID {uid} isn't associated with any server")
+    pass
 
 
 def recognize_server(uid: int, game: types.Game) -> str:
     """Recognizes which server a UID is from."""
-    if game is types.Game.GENSHIN:
-        return recognize_genshin_server(uid)
-    if game is types.Game.STARRAIL:
-        return recognize_starrail_server(uid)
-    if game is types.Game.ZZZ:
-        return recognize_zzz_server(uid)
-
-    raise ValueError(f"recognize_server is not implemented for game {game}")
+    pass
 
 
 def recognize_game(uid: int, region: types.Region) -> typing.Optional[types.Game]:
     """Recognize the game of a uid."""
-    if len(str(uid)) == 8:
-        return types.Game.HONKAI
-
-    for game, digits in UID_RANGE.items():
-        if str(uid)[:-8] in digits[region]:
-            return game
-
-    return None
+    pass
 
 
 def recognize_region(uid: int, game: types.Game) -> typing.Optional[types.Region]:
     """Recognize the region of a uid."""
-    if game in {types.Game.ZZZ, types.Game.TOT}:
-        if len(str(uid)) == 8:
-            return types.Region.CHINESE
-        return types.Region.OVERSEAS
-
-    if game not in UID_RANGE:
-        return None
-
-    for region, digits in UID_RANGE[game].items():
-        if str(uid)[:-8] in digits:
-            return region
-
-    return None
+    pass

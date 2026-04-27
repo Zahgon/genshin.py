@@ -35,7 +35,7 @@ class MimoTaskType(enum.IntEnum):
     FINISHABLE = 1
     """e.g. Sunday Advanced Tutorial: What is the core Charge mechanic?"""
     VISIT = 2
-    """e.g. Visit the 【Honkai: Star Rail】 Interest Group on the day"""
+    """e.g. Visit the ã€�Honkai: Star Railã€‘ Interest Group on the day"""
     COMMENT = 3
     """e.g. Participate in this week's creative interactions and leave your creations in the comments"""
     VIEW_TOPIC = 4
@@ -51,7 +51,7 @@ class MimoTaskType(enum.IntEnum):
     HSR_GAME = 8
     """e.g. Complete Divergent Universe or Simulated Universe 1 time"""
     TRAILER = 10
-    """e.g. Myriad Celestia Trailer — "After the Sunset" | Honkai: Star Rail"""
+    """e.g. Myriad Celestia Trailer â€” "After the Sunset" | Honkai: Star Rail"""
     ZZZ_DAILY_LOGIN = 12
     """e.g. Log into Zenless Zone Zero today"""
     ZZZ_CONSECUTIVE_LOGIN = 13
@@ -81,15 +81,7 @@ class MimoGame(APIModel):
 
     @property
     def game(self) -> typing.Union[typing.Literal["hoyolab"], types.Game, int]:
-        if self.id == 5:
-            return "hoyolab"
-        if self.id == 6:
-            return types.Game.STARRAIL
-        if self.id == 8:
-            return types.Game.ZZZ
-        if self.id == 2:
-            return types.Game.GENSHIN
-        return self.id
+        pass
 
 
 class MimoTask(APIModel):
@@ -110,7 +102,7 @@ class MimoTask(APIModel):
 
     @pydantic.field_validator("type", mode="before")
     def __transform_task_type(cls, v: int) -> typing.Union[int, MimoTaskType]:
-        return prevent_enum_error(v, MimoTaskType)
+        pass
 
 
 class MimoShopItem(APIModel):
@@ -162,5 +154,4 @@ class MimoLotteryResult(APIModel):
 
     @pydantic.model_validator(mode="before")
     def __nest_reward(cls, v: typing.Dict[str, typing.Any]) -> typing.Dict[str, typing.Any]:
-        v["reward"] = {"type": v.pop("type"), "icon": v.pop("icon"), "name": v.pop("name")}
-        return v
+        pass

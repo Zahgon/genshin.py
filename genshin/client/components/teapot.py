@@ -24,14 +24,7 @@ class TeapotClient(base.BaseClient):
         **kwargs: typing.Any,
     ) -> typing.Mapping[str, typing.Any]:
         """Make a request towards the teapot endpoint."""
-        params = dict(params or {})
-
-        base_url = routes.TEAPOT_URL.get_url(self.region)
-        url = base_url / endpoint
-
-        params["lang"] = lang or self.lang
-
-        return await self.request(url, method=method, params=params, **kwargs)
+        pass
 
     async def _get_teapot_replica_page(
         self,
@@ -46,17 +39,7 @@ class TeapotClient(base.BaseClient):
         lang: typing.Optional[str] = None,
     ) -> typing.Sequence[models.TeapotReplica]:
         """Get a teapot replica page."""
-        params = dict(
-            next=page * limit,  # weirdest sorting ever
-            zip_type=zip_type,
-            block_id=block_id or "",
-            module_id=module_id or "",
-            target_region=region or "",
-            version=version or "",
-            limit=limit,
-        )
-        data = await self.request_teapot("list", lang=lang, params=params)
-        return [models.TeapotReplica(**entry) for entry in data["articles"]]
+        pass
 
     def teapot_replicas(
         self,
@@ -72,20 +55,4 @@ class TeapotClient(base.BaseClient):
         lang: typing.Optional[str] = None,
     ) -> paginators.PagedPaginator[models.TeapotReplica]:
         """Get a teapot replica paginator."""
-        if not region and uid:
-            region = utility.recognize_genshin_server(uid)
-
-        return paginators.PagedPaginator(
-            functools.partial(
-                self._get_teapot_replica_page,
-                zip_type=zip_type,
-                block_id=block_id,
-                module_id=module_id,
-                region=region,
-                version=version,
-                limit=page_size,
-                lang=lang,
-            ),
-            limit=limit,
-            page_size=page_size,
-        )
+        pass

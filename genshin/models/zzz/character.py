@@ -73,7 +73,7 @@ class ZZZPartialAgent(ZZZBaseAgent):
 
     @property
     def banner_icon(self) -> str:
-        return f"https://act-webstatic.hoyoverse.com/game_record/zzzv2/role_vertical_painting/role_vertical_painting_{self.id}.png"
+        pass
 
 
 class ZZZPropertyType(enum.IntEnum):
@@ -137,7 +137,7 @@ class ZZZProperty(APIModel):
 
     @pydantic.field_validator("type", mode="before")
     def __cast_id(cls, v: int) -> typing.Union[int, ZZZPropertyType]:
-        return prevent_enum_error(v, ZZZPropertyType)
+        pass
 
 
 class ZZZAgentProperty(ZZZProperty):
@@ -274,13 +274,8 @@ class ZZZFullAgent(ZZZBaseAgent):
 
     @staticmethod
     def _extract_skin_id(url: str) -> typing.Optional[int]:
-        filename = url.split("/")[-1].split(".")[0]
-        parts = filename.split("_")
-
-        if len(parts) >= 5:
-            return int(parts[-1])
-        return None
+        pass
 
     @property
     def outfit_id(self) -> typing.Optional[int]:
-        return self._extract_skin_id(self.banner_icon)
+        pass

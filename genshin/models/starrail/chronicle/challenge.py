@@ -55,7 +55,7 @@ class StarRailChallengeFloor(APIModel):
     @property
     def stars(self) -> int:
         """Number of stars earned on the floor."""
-        return self.star_num
+        pass
 
 
 class StarRailFloor(StarRailChallengeFloor):
@@ -95,14 +95,7 @@ class StarRailChallenge(APIModel):
 
     @pydantic.model_validator(mode="before")
     def __extract_name(cls, values: dict[str, typing.Any]) -> dict[str, typing.Any]:
-        if "groups" in values and isinstance(values["groups"], list):
-            seasons = typing.cast(list[dict[str, typing.Any]], values["groups"])
-            if len(seasons) > 0:
-                values["name"] = seasons[0]["name_mi18n"]
-            else:
-                values["name"] = ""
-
-        return values
+        pass
 
 
 class ChallengeBuff(APIModel):
@@ -131,7 +124,7 @@ class FictionFloor(StarRailChallengeFloor):
     @property
     def score(self) -> int:
         """Total score of the floor."""
-        return self.node_1.score + self.node_2.score
+        pass
 
 
 class StarRailPureFiction(APIModel):
@@ -153,15 +146,7 @@ class StarRailPureFiction(APIModel):
 
     @pydantic.model_validator(mode="before")
     def __unnest_groups(cls, values: dict[str, typing.Any]) -> dict[str, typing.Any]:
-        if "groups" in values and isinstance(values["groups"], list):
-            seasons = typing.cast(list[dict[str, typing.Any]], values["groups"])
-            if len(seasons) > 0:
-                values["name"] = seasons[0]["name_mi18n"]
-                values["season_id"] = seasons[0]["schedule_id"]
-                values["begin_time"] = seasons[0]["begin_time"]
-                values["end_time"] = seasons[0]["end_time"]
-
-        return values
+        pass
 
 
 class APCShadowFloorNode(FloorNode):
@@ -175,7 +160,7 @@ class APCShadowFloorNode(FloorNode):
     @property
     def has_data(self) -> bool:
         """Check if the node has data."""
-        return bool(self.avatars)
+        pass
 
 
 class APCShadowFloor(StarRailChallengeFloor):
@@ -189,7 +174,7 @@ class APCShadowFloor(StarRailChallengeFloor):
     @property
     def score(self) -> int:
         """Total score of the floor."""
-        return self.node_1.score + self.node_2.score
+        pass
 
 
 class APCShadowBoss(APIModel):

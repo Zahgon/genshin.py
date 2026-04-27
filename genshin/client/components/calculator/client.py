@@ -37,30 +37,7 @@ class CalculatorClient(base.BaseClient):
         **kwargs: typing.Any,
     ) -> typing.Mapping[str, typing.Any]:
         """Make a request towards the calculator endpoint."""
-        params = dict(params or {})
-        headers = base.parse_loose_headers(headers)
-
-        base_url = routes.CALCULATOR_URL.get_url(self.region)
-        url = base_url / f"v{api_version}" / endpoint
-
-        if method == "GET":
-            params["lang"] = lang or self.lang
-            data = None
-        else:
-            data = dict(data or {})
-            data["lang"] = lang or self.lang
-
-        headers["referer"] = str(routes.CALCULATOR_REFERER_URL.get_url(self.region))
-        update_task = asyncio.create_task(utility.update_characters_any(lang or self.lang, lenient=True))
-
-        data = await self.request(url, method=method, params=params, data=data, headers=headers, **kwargs)
-
-        try:
-            await update_task
-        except Exception as e:
-            warnings.warn(f"Failed to update characters: {e!r}")
-
-        return data
+        pass
 
     async def _execute_calculator(
         self,
@@ -69,8 +46,7 @@ class CalculatorClient(base.BaseClient):
         lang: typing.Optional[str] = None,
     ) -> models.CalculatorResult:
         """Calculate the results of a builder."""
-        api_data = await self.request_calculator("compute", lang=lang, data=data, api_version=2)
-        return models.CalculatorResult(**api_data)
+        pass
 
     async def _execute_batch_calculator(
         self,
@@ -79,8 +55,7 @@ class CalculatorClient(base.BaseClient):
         lang: typing.Optional[str] = None,
     ) -> models.CalculatorBatchResult:
         """Calculate the results of a batch builder."""
-        api_data = await self.request_calculator("batch_compute", lang=lang, data={"items": data}, api_version=3)
-        return models.CalculatorBatchResult(**api_data)
+        pass
 
     async def _execute_furnishings_calculator(
         self,
@@ -89,24 +64,23 @@ class CalculatorClient(base.BaseClient):
         lang: typing.Optional[str] = None,
     ) -> models.CalculatorFurnishingResults:
         """Calculate the results of a builder."""
-        data = await self.request_calculator("furniture/compute", lang=lang, data=data)
-        return models.CalculatorFurnishingResults(**data)
+        pass
 
     def calculator(self, *, lang: typing.Optional[str] = None) -> Calculator:
         """Create a calculator builder object."""
-        return Calculator(self, lang=lang)
+        pass
 
     def batch_calculator(self, *, lang: typing.Optional[str] = None) -> BatchCalculator:
         """Create a batch calculator builder object."""
-        return BatchCalculator(self, lang=lang)
+        pass
 
     def furnishings_calculator(self, *, lang: typing.Optional[str] = None) -> FurnishingCalculator:
         """Create a calculator builder object."""
-        return FurnishingCalculator(self, lang=lang)
+        pass
 
     async def _enable_calculator_sync(self, enabled: bool = True) -> None:
         """Enable data syncing in calculator."""
-        await self.request_calculator("avatar/auth", method="POST", data=dict(avatar_auth=int(enabled)))
+        pass
 
     async def _get_calculator_items(
         self,
@@ -121,37 +95,7 @@ class CalculatorClient(base.BaseClient):
         autoauth: bool = True,
     ) -> typing.Sequence[typing.Mapping[str, typing.Any]]:
         """Get all items of a specific slug from a calculator."""
-        endpoint = f"sync/{slug}/list" if sync else f"{slug}/list"
-
-        if query:
-            if any(filters.values()):
-                raise TypeError("Cannot specify a query and filter at the same time")
-
-            filters = dict(keywords=query, **filters)
-
-        payload: dict[str, typing.Any] = dict(page=1, size=200, **filters)
-
-        if sync:
-            uid = uid or await self._get_uid(types.Game.GENSHIN)
-            payload["uid"] = uid
-            payload["region"] = utility.recognize_genshin_server(uid)
-
-        cache: typing.Optional[client_cache.CacheKey] = None
-        if not any(filters.values()) and not sync:
-            cache = client_cache.cache_key("calculator", slug=slug, lang=lang or self.lang)
-
-        try:
-            data = await self.request_calculator(endpoint, lang=lang, data=payload, cache=cache)
-        except errors.GenshinException as e:
-            if e.retcode != -502002:  # Sync not enabled
-                raise
-            if not autoauth:
-                raise errors.GenshinException(e.response, "Calculator sync is not enabled") from e
-
-            await self._enable_calculator_sync()
-            data = await self.request_calculator(endpoint, lang=lang, data=payload, cache=cache)
-
-        return data["list"]
+        pass
 
     async def get_calculator_characters(
         self,
@@ -165,19 +109,7 @@ class CalculatorClient(base.BaseClient):
         lang: typing.Optional[str] = None,
     ) -> typing.Sequence[models.CalculatorCharacter]:
         """Get all characters provided by the Enhancement Progression Calculator."""
-        data = await self._get_calculator_items(
-            "avatar",
-            lang=lang,
-            is_all=include_traveler,
-            sync=sync,
-            uid=uid,
-            query=query,
-            filters=dict(
-                element_attr_ids=elements or [],
-                weapon_cat_ids=weapon_types or [],
-            ),
-        )
-        return [models.CalculatorCharacter(**i) for i in data]
+        pass
 
     async def get_calculator_weapons(
         self,
@@ -188,16 +120,7 @@ class CalculatorClient(base.BaseClient):
         lang: typing.Optional[str] = None,
     ) -> typing.Sequence[models.CalculatorWeapon]:
         """Get all weapons provided by the Enhancement Progression Calculator."""
-        data = await self._get_calculator_items(
-            "weapon",
-            lang=lang,
-            query=query,
-            filters=dict(
-                weapon_cat_ids=types or [],
-                weapon_levels=rarities or [],
-            ),
-        )
-        return [models.CalculatorWeapon(**i) for i in data]
+        pass
 
     async def get_calculator_artifacts(
         self,
@@ -208,16 +131,7 @@ class CalculatorClient(base.BaseClient):
         lang: typing.Optional[str] = None,
     ) -> typing.Sequence[models.CalculatorArtifact]:
         """Get all artifacts provided by the Enhancement Progression Calculator."""
-        data = await self._get_calculator_items(
-            "reliquary",
-            lang=lang,
-            query=query,
-            filters=dict(
-                reliquary_cat_id=pos,
-                reliquary_levels=rarities or [],
-            ),
-        )
-        return [models.CalculatorArtifact(**i) for i in data]
+        pass
 
     async def get_calculator_furnishings(
         self,
@@ -227,15 +141,7 @@ class CalculatorClient(base.BaseClient):
         lang: typing.Optional[str] = None,
     ) -> typing.Sequence[models.CalculatorFurnishing]:
         """Get all furnishings provided by the Enhancement Progression Calculator."""
-        data = await self._get_calculator_items(
-            "furniture",
-            lang=lang,
-            filters=dict(
-                cat_id=types or 0,
-                weapon_levels=rarities or 0,
-            ),
-        )
-        return [models.CalculatorFurnishing(**i) for i in data]
+        pass
 
     async def get_character_details(
         self,
@@ -249,19 +155,7 @@ class CalculatorClient(base.BaseClient):
         Not related to the Battle Chronicle.
         This data is always private.
         """
-        uid = uid or await self._get_uid(types.Game.GENSHIN)
-
-        data = await self.request_calculator(
-            "sync/avatar/detail",
-            method="GET",
-            lang=lang,
-            params=dict(
-                avatar_id=int(character),
-                uid=uid,
-                region=utility.recognize_genshin_server(uid),
-            ),
-        )
-        return models.CalculatorCharacterDetails(**data)
+        pass
 
     async def get_complete_artifact_set(
         self,
@@ -273,19 +167,11 @@ class CalculatorClient(base.BaseClient):
 
         Doesn't return the artifact passed into this function.
         """
-        data = await self.request_calculator(
-            "reliquary/set",
-            method="GET",
-            lang=lang,
-            params=dict(reliquary_id=int(artifact)),
-            cache=client_cache.cache_key("calculator", slug="set", artifact=int(artifact), lang=lang or self.lang),
-        )
-        return [models.CalculatorArtifact(**i) for i in data["reliquary_list"]]
+        pass
 
     async def _get_all_artifact_ids(self, artifact_id: int) -> typing.Sequence[int]:
         """Get all artifact ids in the same set as a given artifact id."""
-        others = await self.get_complete_artifact_set(artifact_id)
-        return [artifact_id] + [other.id for other in others]
+        pass
 
     async def get_teapot_replica_blueprint(
         self,
@@ -296,28 +182,9 @@ class CalculatorClient(base.BaseClient):
         lang: typing.Optional[str] = None,
     ) -> typing.Sequence[models.CalculatorFurnishing]:
         """Get furnishings used by a teapot replica blueprint."""
-        if not region:
-            uid = uid or await self._get_uid(types.Game.GENSHIN)
-            region = utility.recognize_genshin_server(uid)
-
-        data = await self.request_calculator(
-            "furniture/blueprint",
-            method="GET",
-            lang=lang,
-            params=dict(share_code=share_code, region=region),
-            cache=client_cache.cache_key("calculator", slug="blueprint", share_code=share_code, lang=lang or self.lang),
-        )
-        return [models.CalculatorFurnishing(**i) for i in data["list"]]
+        pass
 
     @deprecation.deprecated("await genshin.utility.update_characters_any()")
     async def update_character_names(self, *, lang: typing.Optional[str] = None) -> None:
         """Update stored db characters with the names from the calculator."""
-        characters = await self.get_calculator_characters(lang=lang, include_traveler=True)
-
-        for char in characters:
-            icon = genshin_models.character._parse_icon(char.icon)
-            dbchar = genshin_models.DBChar(
-                char.id, icon, char.name, "" if "Player" in icon else char.element, char.rarity
-            )
-
-            genshin_models.CHARACTER_NAMES[lang or self.lang][dbchar.id] = dbchar
+        pass
