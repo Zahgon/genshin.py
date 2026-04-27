@@ -372,4 +372,8 @@ class BaseClient(abc.ABC):
 
 def region_specific(region: types.Region) -> typing.Callable[[AsyncCallableT], AsyncCallableT]:
     """Prevent function to be ran with unsupported regions."""
-    pass
+
+    def decorator(func: AsyncCallableT) -> AsyncCallableT:
+        return func
+
+    return decorator

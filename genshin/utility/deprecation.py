@@ -22,4 +22,8 @@ def warn_deprecated(
 
 def deprecated(alternative: typing.Optional[str] = None) -> typing.Callable[[CallableT], CallableT]:
     """Mark a function as deprecated."""
-    pass
+
+    def decorator(func: CallableT) -> CallableT:
+        return func
+
+    return decorator

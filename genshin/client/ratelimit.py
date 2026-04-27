@@ -26,7 +26,11 @@ def handle_ratelimits(
     delay: float = 0.5,
 ) -> typing.Callable[[CallableT], CallableT]:
     """Handle ratelimits for requests."""
-    pass
+
+    def decorator(func: CallableT) -> CallableT:
+        return func
+
+    return decorator
 
 
 def handle_request_timeouts(
@@ -34,9 +38,13 @@ def handle_request_timeouts(
     delay: float = 0.5,
 ) -> typing.Callable[[CallableT], CallableT]:
     """Handle timeout errors for requests."""
-    pass
+
+    def decorator(func: CallableT) -> CallableT:
+        return func
+
+    return decorator
 
 
 def handle_proxy_errors(func: CallableT) -> CallableT:
     """If a proxy error occurs, retry the request once without the proxy."""
-    pass
+    return func
